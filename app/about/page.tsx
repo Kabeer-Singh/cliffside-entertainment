@@ -78,12 +78,12 @@ export default function Home() {
                     🎓🎵 The Trojan Maestro 🎵🎓
                     From the early days of banging beats to the present moment where Stokes thrives as a Label Coordinator at Position Music, their journey has been nothing short of a music-filled odyssey. Stokes began their epic quest for greatness by pursuing a degree in the Music Industry at the legendary University of Southern California (USC).
                     📀🌟 A Star-Maker Extraordinaire 🌟📀
-                    But Stokes didn&apos;t stop there. With boundless energy, they&apos;ve managed to sign over 10 exceptional artists to major record labels, showcasing a unique talent for spotting the raw talent that lies hidden in the beats of the streets.
-                    At [Music Agency Name], our founder doesn&apos;t just curate talent; they ignite it. The path from the studio to stardom has never been smoother or more exciting.
+                    But Stokes didnt stop there. With boundless energy, theyve managed to sign over 10 exceptional artists to major record labels, showcasing a unique talent for spotting the raw talent that lies hidden in the beats of the streets.
+                    At [Music Agency Name], our founder doesnt just curate talent; they ignite it. The path from the studio to stardom has never been smoother or more exciting.
                     🌌🚀 Join the Constellation of Stars 🚀🌌
-                    Are you an aspiring Rap or R&B artist looking to set the world on fire with your sound? Our founder, Stokes, encourages you to reach out and make your musical dreams a reality. The stage is set, the lights are dimmed, and we&apos;re waiting for your unique brilliance to light up the night sky.
+                    Are you an aspiring Rap or R&B artist looking to set the world on fire with your sound? Our founder, Stokes, encourages you to reach out and make your musical dreams a reality. The stage is set, the lights are dimmed, and were waiting for your unique brilliance to light up the night sky.
                     Feel the groove, chase your dreams, and reach out to us today! 🎉🎤🌟
-                    Don&apos;t wait! Let&apos;s create the next chart-topping sensation together. Your journey to stardom begins here. 🎵🎆🌠
+                    Dont wait! Lets create the next chart-topping sensation together. Your journey to stardom begins here. 🎵🎆🌠
                     📩 Contact Stokes at ceo@cliffside.com to start your music adventure! 🎶📢📀
                     </Bio>
                 </Text>
