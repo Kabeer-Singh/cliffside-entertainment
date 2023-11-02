@@ -10,8 +10,10 @@ const NavigationContainer = s.div`
   align-items: center;
   justify-content: center;
   height: 120px;
-  width: 90vw;
-  background-color: black;
+  width: 100vw;
+  position: fixed;
+  top: 0px;
+  backgroundColor: 'hsla(0, 0%, 83%, 0.8)';
 `;
 
 
@@ -22,8 +24,8 @@ const TabHeader = s.div`
     font-style: normal;
     font-weight: 200;
     line-height: normal;
-    margin-right: 82px;
-    margin-left: 82px;
+    margin-right: 62px;
+    margin-left: 62px;
 
     border-bottom: 2px solid transparent; /* Initially, the border is transparent */
     transition: border-bottom 0.3s ease-in-out; /* Add a transition effect */
@@ -86,7 +88,7 @@ export default function NavBar() {
             <TabHeader onClick={() => handleClick('about')}>about</TabHeader>
             <TabHeader onClick={() => handleClick('our-work')}>our work</TabHeader>
             <TabHeader onClick={() => handleClick('contact')}>contact</TabHeader>
-            <LoginButton>login</LoginButton>
+            <LoginButton onClick={() => handleClick('login')}>login</LoginButton>
         </NavigationContainer>
     )
 }
