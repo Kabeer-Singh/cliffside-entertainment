@@ -88,43 +88,12 @@ background-clip: text; /* Clip the text to the background color */
 `
 
 export default function Home() {
-  const sectionRefs = [useRef(), useRef(), useRef()]; // Create an array of refs for your sections
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = (e) => {
-      if (e.deltaY > 0) {
-        // Scrolling down
-        if (currentSectionIndex < sectionRefs.length - 1) {
-          sectionRefs[currentSectionIndex + 1].current.scrollIntoView({ behavior: 'smooth', block: 'start', // or 'center', 'end', or 'nearest'
-          inline: 'start', });
-          setCurrentSectionIndex(currentSectionIndex + 1);
-        }
-      } else {
-        // Scrolling up
-        if (currentSectionIndex > 0) {
-          sectionRefs[currentSectionIndex - 1].current.scrollIntoView({ behavior: 'smooth', block: 'start', // or 'center', 'end', or 'nearest'
-          inline: 'start', });
-          setCurrentSectionIndex(currentSectionIndex - 1);
-        }
-      }
-    };
-
-    // Attach the wheel event listener when the component mounts
-    window.addEventListener('wheel', handleScroll, { passive: false });
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('wheel', handleScroll);
-    };
-  }, [currentSectionIndex, sectionRefs]);
-
   return (
     <PageContainer>
 
       <NavBar/>
 
-      <FrontPageContainer ref={sectionRefs[0]}>
+      <FrontPageContainer>
         <Logo>
         <TextContainer className='content'>
           <HeaderText>ClIFFSIDE ENTERTAINMENT</HeaderText>
@@ -137,7 +106,7 @@ export default function Home() {
 
       {/* Section Section of homepage */}
       <FrontPageContainer>
-        <Text ref={sectionRefs[1]}>Section Content</Text>
+        <Text>Section Content</Text>
         <TextContainer>
           <Text>Los-Angeles based.</Text>
           <Text>Sync & Creative Powerhouse  Collaborations.</Text>
