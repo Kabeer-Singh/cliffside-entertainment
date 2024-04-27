@@ -4,63 +4,45 @@ import s from 'styled-components'
 import NavBar from '../../components/navigation'
 import concert from '../public/concert.jpg'
 import React, { useRef, useEffect, useState } from 'react';
-import jalen from '../../public/Jalen.jpeg'
+import { Yaldevi } from 'next/font/google';
+
+const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' })
+
 
 const PageContainer = s.div`
     display: flex;
     align-items: center;
     justify-content: center;
     flex-flow: column nowrap;
+    background-color: #71B1CD;
+    width: 100vw;
+    height: 100vh;
 `;
 
-const FrontPageContainer = s.div`
+const InfoContainer = s.div`
+  border-radius: 20px;
+  border: 1px solid #FFF;
+  width: 98vw;
+  height: 100vh;
+  margin-top: 75px;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 29px;
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
   align-items: flex-start;
-  width: 100vw;
-  margin-top: 170px;
+  justify-content: center;
+`;
+
+const TitleContainer = s.div`
+  color: #FFF;
+  font-family: ${TitleFont};
+  font-size: 124px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 17.36px;
+  align-self: center;
 `
-
-const JalenImage = s.div`
-    background-size: contain;
-    background-position: center;
-    width: 23vw;
-    height: 40vh;
-    margin-right: 75px;
-    background-image: url('Jalen.jpeg');
-    border: solid 2px #26AAE3;
-`
-
-const Text = s.div`
-    width: 43vw;
-    align-items: flex-start;
-    justify-content: center;
-    text-align: left;
-    `
-
-const Name = s.h1`
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 0;
-  font-family: Public Sans;
-`;
-
-const Position = s.p`
-  font-size: 1.5rem;
-  font-weight: normal;
-  margin: 10px 0;
-  font-family: Public Sans;
-
-`;
-
-const Bio = s.p`
-  font-size: 1rem;
-  font-weight: normal;
-  font-family: Public Sans;
-
-`;
 
 
 export default function Home() {
@@ -68,26 +50,9 @@ export default function Home() {
     return(
         <PageContainer>
             <NavBar/>
-            <FrontPageContainer>
-                <JalenImage/>
-                <Text>
-                    <Name>Jalen Stokes</Name>
-                    <Position>CEO, Founder</Position>
-                    <Bio>
-                    Stokes, the mastermind behind [Music Agency Name], is a true visionary in the music industry. With an insatiable passion for the rhythm and rhyme of Rap and R&B, Stokes has orchestrated a dazzling career filled with success, creativity, and a deep love for the beats that make hearts groove.
-                    🎓🎵 The Trojan Maestro 🎵🎓
-                    From the early days of banging beats to the present moment where Stokes thrives as a Label Coordinator at Position Music, their journey has been nothing short of a music-filled odyssey. Stokes began their epic quest for greatness by pursuing a degree in the Music Industry at the legendary University of Southern California (USC).
-                    📀🌟 A Star-Maker Extraordinaire 🌟📀
-                    But Stokes didnt stop there. With boundless energy, theyve managed to sign over 10 exceptional artists to major record labels, showcasing a unique talent for spotting the raw talent that lies hidden in the beats of the streets.
-                    At [Music Agency Name], our founder doesnt just curate talent; they ignite it. The path from the studio to stardom has never been smoother or more exciting.
-                    🌌🚀 Join the Constellation of Stars 🚀🌌
-                    Are you an aspiring Rap or R&B artist looking to set the world on fire with your sound? Our founder, Stokes, encourages you to reach out and make your musical dreams a reality. The stage is set, the lights are dimmed, and were waiting for your unique brilliance to light up the night sky.
-                    Feel the groove, chase your dreams, and reach out to us today! 🎉🎤🌟
-                    Dont wait! Lets create the next chart-topping sensation together. Your journey to stardom begins here. 🎵🎆🌠
-                    📩 Contact Stokes at ceo@cliffside.com to start your music adventure! 🎶📢📀
-                    </Bio>
-                </Text>
-            </FrontPageContainer>
+            <InfoContainer>
+              <TitleContainer>(artists)</TitleContainer>
+            </InfoContainer>
         </PageContainer>
         
     )
