@@ -3,13 +3,13 @@ import s, {keyframes} from "styled-components";
 import { useRouter } from "next/navigation";
 import { Saira_Extra_Condensed } from "next/font/google";
 
-const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '100' })
+const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '100' });
 
 const NavigationContainer = s.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 50px;
+  height: 90px;
   width: 100vw;
   position: fixed;
   top: 0px;
@@ -86,8 +86,8 @@ export default function NavBar() {
         <NavigationContainer>
             <NavBarItems>
                 <TabHeader onClick={() => handleClick('/')}>(home)</TabHeader>
-                <TabHeader onClick={() => handleClick('about')}>(artists)</TabHeader>
-                <TabHeader onClick={() => handleClick('our-work')}>(about)</TabHeader>
+                <TabHeader onClick={() => handleClick('artists')}>(artists)</TabHeader>
+                <TabHeader onClick={() => handleClick('about')}>(about)</TabHeader>
                 <TabHeader onClick={() => handleClick('contact')}>(contact)</TabHeader>
             </NavBarItems>
             <LoginButton onClick={() => handleClick('login')}>login</LoginButton>

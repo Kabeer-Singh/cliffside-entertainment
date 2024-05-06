@@ -5,84 +5,97 @@ import NavBar from '../components/navigation'
 import React, { useRef, useEffect, useState } from 'react';
 import { Yaldevi } from 'next/font/google';
 import logo from '../public/logos/mockUpLogo.png';
+import Link from 'next/link';
 
 const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' })
 
 const PageContainer = s.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-flow: column nowrap;
-    background-color: #71B1CD;
-    width: 100vw;
-    height: 100vh;
-`;
-
-const InfoContainer = s.div`
-  border-radius: 20px;
-  border: 1px solid #FFF;
-  width: 98vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: row nowrap;
+  background-color: #71B1CD;
+  width: 100vw;
   height: 100vh;
-  margin-top: 75px;
-  margin-left: 24px;
-  margin-right: 24px;
-  margin-bottom: 29px;
+  margin-top: 90px;
 `;
-
-const TitleContainer = s.div`
+const InfoContainer = s.div`
+    border-radius: 20px;
+    border: 1px solid #FFF;
+    width: 100%;
+    height: 90%;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    margin-bottom: 5vh;
+    padding: 1vh 1vw;
+    display: grid;
+    grid-template-rows: 30% 70%;
+`;
+const TitleContainer = s.h1`
   color: #FFF;
   font-family: ${TitleFont};
-  font-size: 124px;
+  font-size: 7vw;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
   letter-spacing: 17.36px;
+  margin-right: 2vw;
 `
-
-const TitleContainerSecond = s.div`
+const Title = s.div`
+  display: flex;
+  flex-flow: column nowrap;
+  grid-row: 1 / span 1; /* Top row spans one row */
+  grid-column: 1 / span 2; /* Top row spans two columns */
+`
+const TitleContainerSecond = s.h1`
   color: #FFF;
   font-family: ${TitleFont};
-  font-size: 124px;
+  font-size: 7vw;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
   letter-spacing: 17.36px;
   align-self: flex-end;
-  margin-left: 202px;
   margin-bottom: 20px;
+  align-self: flex-end;
 `;
-
 const LogoSloganButtonContainer = s.div`
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-around;
     align-items: flex-start;
 `;
-
 const Logo = s(Image)`
   width: 350px;
   height: 450.5px;
-  margin-left: 70px;
+  align-self: center;
 `;
-
-const SloganButtonContainer = s.div`
+const LeftColumn = s.div`
+grid-row: 2 / span 1;
+grid-column: 1 / span 1;
+display: flex;
+justify-content: center; /* Center content horizontally */
+align-items: center; /* Center content vertically */
+`;
+const RightColumn = s.div`
     display: flex;
     align-items: center;
     justify-content: center;
     flex-flow: column nowrap;
+    grid-row: 2 / span 1; /* Bottom right column spans one row */
+    grid-column: 2 / span 1; /* Bottom right column spans one column */
+    margin-right: 2vw;
 `;
-
 const Slogan = s.div`
   color: #FFF;
   font-family: ${TitleFont};
-  font-size: 64px;
+  font-size: 2vw;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-  margin-bottom: 3vh;
+  margin-bottom: 1vh;
 `;
-
-const Button = s.button`
+const Button = s(Link)`
 border-radius: 20px;
 background: #FFF;
 color: #71B1CD;
@@ -97,6 +110,7 @@ padding-top: 13px;
 padding-bottom: 13px;
 text-align: center !important;
 margin-bottom: 5vh;
+width: 100%;
 `
 
 
@@ -105,18 +119,23 @@ export default function Home() {
     <PageContainer>
       <NavBar/>
       <InfoContainer>
-        <TitleContainer>CLIFFSIDE</TitleContainer>
-        <TitleContainerSecond>ENTERTAINMENT</TitleContainerSecond>
-        <LogoSloganButtonContainer>
+        
+        <Title>
+          <TitleContainer>CLIFFSIDE</TitleContainer>
+          <TitleContainerSecond>ENTERTAINMENT</TitleContainerSecond>
+        </Title>
+        
+        <LeftColumn>
           <Logo src={logo} alt='logo'/>
-          <SloganButtonContainer>
-            <Slogan style={{alignSelf: 'flex-start'}}>RISE TO NEW HEIGHTS</Slogan>
-            <Slogan style={{alignSelf: 'center'}}>ELEVATE YOUR SOUND</Slogan>
-            <Slogan style={{alignSelf: 'flex-end'}}>TAKE THE LEAP</Slogan>
-            <Button>JOIN OUR ROSTER</Button>
-          </SloganButtonContainer>
-        </LogoSloganButtonContainer>
-          
+        </LeftColumn>
+        
+        <RightColumn>
+          <Slogan style={{alignSelf: 'flex-start'}}>RISE TO NEW HEIGHTS</Slogan>
+          <Slogan style={{alignSelf: 'center'}}>ELEVATE YOUR SOUND</Slogan>
+          <Slogan style={{alignSelf: 'flex-end'}}>TAKE THE LEAP</Slogan>
+          <Button href='/contact'>JOIN OUR ROSTER</Button>
+        </RightColumn>
+        
       </InfoContainer>
     </PageContainer>
   )

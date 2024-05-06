@@ -44,14 +44,16 @@ const TitleContainer = s.div`
   align-self: center;
 `
 
+
 export default function Home() {
 
     return(
         <PageContainer>
             <NavBar/>
             <InfoContainer>
-              <TitleContainer>(about)</TitleContainer>
+              <TitleContainer>(artists)</TitleContainer>
             </InfoContainer>
         </PageContainer>
+        
     )
 }
