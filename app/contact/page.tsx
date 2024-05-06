@@ -8,6 +8,11 @@ import { Yaldevi } from 'next/font/google';
 
 const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' });
 
+// Define props interface with isActive prop
+interface FormTitleProps {
+  isActive: boolean;
+}
+
 
 const PageContainer = s.div`
     display: flex;
@@ -49,37 +54,37 @@ padding-left: 5vw;
 padding-right: 5vw;
 `
 
-const FormTitle = s.div`
-  font-family: ${TitleFont};
-  font-size: 3em;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  margin-bottom: 2vh;
-  position: relative;
-  color: ${props => (props.isActive ? "#FFF" : "#B3B3B3")};
-  &:hover {
-    cursor: pointer;
-  }
+const FormTitle = s.div<FormTitleProps>`
+font-family: ${TitleFont};
+font-size: 3em;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+margin-bottom: 2vh;
+position: relative;
+color: ${props => (props.isActive ? "#FFF" : "#B3B3B3")};
+&:hover {
+  cursor: pointer;
+}
 
-  ${props =>
-    props.isActive &&
-    `
-    &::before {
-    content: '';
-    position: absolute;
-    left: -45px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 25px;
-    height: 25px;
-    margin-right: 25px;
-    background-color: #fff;
-    border-radius: 50%;
-    z-index: 1;
-    opacity: 1;
-    transition: opacity 2s ease-in;
-  }
+${props =>
+  props.isActive &&
+  `
+  &::before {
+  content: '';
+  position: absolute;
+  left: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 25px;
+  margin-right: 25px;
+  background-color: #fff;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 2s ease-in;
+}
 `}
 `;
 
@@ -158,15 +163,15 @@ const Form = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleFullNameChange = (e) => {
+  const handleFullNameChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setFullName(e.target.value);
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setEmail(e.target.value);
   };
 
-  const handleMessageChange = (e) => {
+  const handleMessageChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
     setMessage(e.target.value);
   };
 
@@ -193,7 +198,7 @@ const Form = () => {
           id="message"
           value={message}
           onChange={handleMessageChange}
-          rows="4" // Adjust the number of rows as needed
+          rows={4} // Adjust the number of rows as needed
         />
       </FormInputs>
       <SubmitButton>SUBMIT REQUEST</SubmitButton>
