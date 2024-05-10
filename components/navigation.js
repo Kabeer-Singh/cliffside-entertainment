@@ -9,7 +9,7 @@ const NavigationContainer = s.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 90px;
+  height: 7vh;
   width: 100vw;
   position: fixed;
   top: 0px;
