@@ -2,10 +2,9 @@
 import Image from 'next/image'
 import s from 'styled-components'
 import NavBar from '../../components/navigation'
-import concert from '../public/concert.jpg'
 import React, { useRef, useEffect, useState } from 'react';
 import { Yaldevi } from 'next/font/google';
-
+import {Form} from '../../components/form'
 const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' });
 
 // Define props interface with isActive prop
@@ -88,123 +87,7 @@ ${props =>
 `}
 `;
 
-const FormContainer = s.div`
-`;
 
-const InputTitle = s.h2`
-color: #FFF;
-font-family: ${TitleFont};
-font-size: 3em;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-margin-bottom: 5vh;
-`;
-
-const FormInputs = s.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const FormInputLabel = s.label`
-  color: #FFF;
-  font-family: ${TitleFont};
-  font-size: 2em;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  margin-bottom: 45px;
-`;
-
-const FormInput = s.input`
-  width: 100%;
-  height: 4vh;
-  padding: 5px;
-  border: none;
-  border-bottom: 3px solid white;
-  margin-bottom: 5vh;
-  background: none;
-  outline: none;
-  font-size: 2em;
-  font-family: ${TitleFont};
-`;
-
-const FormTextarea = s.textarea`
-  width: 100%;
-  height: 20vh;
-  padding: 5px;
-  border: none;
-  border-bottom: 1px solid black;
-  margin-bottom: 20px;
-  background: none;
-  border-bottom: 3px solid white;
-  outline: none;
-  font-size: 2em;
-  font-family: ${TitleFont};
-`;
-
-const SubmitButton = s.button`
-  width: 100%;
-  height: 5vh;
-  padding-left: 25px;
-  padding-right: 25px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background: white;
-  font-size: 2em;
-  font-family: ${TitleFont};
-  color: #71B1CD;
-  margin-top: 5vh;
-  border-radius: 20px;
-`
-
-const Form = () => {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleFullNameChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setFullName(e.target.value);
-  };
-
-  const handleEmailChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setEmail(e.target.value);
-  };
-
-  const handleMessageChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setMessage(e.target.value);
-  };
-
-  return (
-    <FormContainer>
-      <InputTitle>LET US KNOW ABOUT GENERAL INQUIRIES</InputTitle>
-      <FormInputs>
-        <FormInputLabel htmlFor="fullName">FULL NAME:</FormInputLabel>
-        <FormInput
-          type="text"
-          id="fullName"
-          value={fullName}
-          onChange={handleFullNameChange}
-        />
-        <FormInputLabel htmlFor="email">YOUR EMAIL:</FormInputLabel>
-        <FormInput
-          type="email"
-          id="email"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <FormInputLabel htmlFor="message">MESSAGE:</FormInputLabel>
-        <FormTextarea
-          id="message"
-          value={message}
-          onChange={handleMessageChange}
-          rows={4} // Adjust the number of rows as needed
-        />
-      </FormInputs>
-      <SubmitButton>SUBMIT REQUEST</SubmitButton>
-    </FormContainer>
-  );
-};
 
 
 
@@ -230,7 +113,10 @@ export default function Home() {
                 <FormTitle isActive={selectedForm === 'PRESS CONTACT'} onClick={() => handleSelectionChange('PRESS CONTACT')}>PRESS CONTACT</FormTitle>
               </Column1>
               <Column2>
-                {selectedForm === 'GENERAL REQUEST' && <Form />}
+                {selectedForm === 'GENERAL REQUEST' && <Form inputTitle='LET US KNOW ABOUT ANY GENERAL INQUIRIES.' />}
+                {selectedForm === 'SUBMIT MUSIC' && <Form submitMusic={true} inputTitle='WE RECEIVE A LOT OF SUBMISSIONS. PLEASE ALLOW UP TO 1 WEEK FOR A RESPONSE. THANKS!' />}
+                {selectedForm === 'SYNCH LICENSE REQUEST' && <Form inputTitle='PLEASE INCLUDE AS MUCH INFORMATION AS POSSIBLE ABOUT THE REQUEST AND WE WILL REPLY AS QUICKLY AS POSSIBLE.' />}
+                {selectedForm === 'PRESS CONTACT' && <Form inputTitle='PLEASE INCLUDE AS MUCH DETAIL AS POSSIBLE IN YOUR REQUESTS.' />}
               </Column2>
             </InfoContainer>
         </PageContainer>

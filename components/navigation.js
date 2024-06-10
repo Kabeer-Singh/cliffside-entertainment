@@ -3,7 +3,7 @@ import s, {keyframes} from "styled-components";
 import { useRouter } from "next/navigation";
 import { Saira_Extra_Condensed } from "next/font/google";
 
-const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '100' });
+const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '200' });
 
 const NavigationContainer = s.div`
   display: flex;
@@ -14,6 +14,7 @@ const NavigationContainer = s.div`
   position: fixed;
   top: 0px;
   background-color: #020307;
+  z-index: 1000;
 `;
 const NavBarItems = s.div`
     margin-left: 24px;
@@ -23,10 +24,9 @@ const NavBarItems = s.div`
 `;
 const TabHeader = s.div`
     color: #71B1CD;
-    font-family: ${daFont};
+    font-family: ${daFont.style.fontFamily};
     font-size: 24px;
     font-style: normal;
-    font-weight: 100;
     line-height: normal;
     margin-right: 34px;
     position: relative;
@@ -58,15 +58,12 @@ const TabHeader = s.div`
 `;
 const LoginButton = s.button`
     color: #71B1CD;
-    font-family: ${daFont};
+    font-family: ${daFont.style.fontFamily};
     font-size: 24px;
     font-style: normal;
-    font-weight: 100;
     line-height: normal;
     padding-left: 22px;
     padding-right: 22px;
-    padding-top: 2px;
-    padding-bottom: 2px;
     margin-right: 24px;
     border-radius: 8px;
     border: 1px solid #71B1CD;
