@@ -14,6 +14,13 @@ font-style: normal;
 font-weight: 600;
 line-height: normal;
 margin-bottom: 5vh;
+margin-top: 0;
+@media (max-width: 1600px) {
+font-size: 2em;
+}
+@media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const FormInputs = s.div`
@@ -29,6 +36,12 @@ const FormInputLabel = s.label`
   font-weight: 600;
   line-height: normal;
   margin-bottom: 20px;
+  @media (max-width: 1600px) {
+    font-size: 1.5em;
+    }
+    @media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const FormInput = s.input`
@@ -45,6 +58,12 @@ const FormInput = s.input`
   outline: none;
   font-size: 2em;
   font-family: ${TitleFont};
+    @media (max-width: 1600px) {
+    font-size: 1em;
+    }
+    @media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const FormInputLabelSmall = s(FormInput)`
@@ -58,6 +77,12 @@ const FormInputLabelSmall = s(FormInput)`
     color: #FFF;
     opacity: 1;
   }
+    @media (max-width: 1600px) {
+    font-size: 1em;
+    }
+    @media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const FormInputSmall = s(FormInput)`
@@ -69,6 +94,12 @@ const FormInputSmall = s(FormInput)`
   &::placeholder {
     color: #909EAA;
   }
+      @media (max-width: 1600px) {
+    font-size: 1em;
+    }
+    @media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const FormTextarea = s.textarea`
@@ -83,22 +114,29 @@ const FormTextarea = s.textarea`
   outline: none;
   font-size: 2em;
   font-family: ${TitleFont};
+    @media (max-width: 1600px) {
+    font-size: 1em;
+    }
+    @media (max-width: 600px) {
+font-size: .75em;
+}
 `;
 
 const SubmitButton = s.button`
   width: 100%;
-  height: 5vh;
+  height: 55px;
   padding-left: 25px;
   padding-right: 25px;
-  padding-top: 5px;
-  padding-bottom: 5px;
   background: white;
   font-size: 2em;
   font-family: ${TitleFont};
   color: #71B1CD;
-  margin-bottom: 2vh;
-  margin-top: 2vh;
+  margin-bottom: 5vh;
+  margin-top: 5vh;
   border-radius: 20px;
+   @media (max-width: 600px) {
+    font-size: 1.25em;
+    }
 `
 
 const StyledButton = s.button<{ selected: boolean }>`
@@ -119,6 +157,9 @@ const StyledButton = s.button<{ selected: boolean }>`
   &:focus {
     outline: none;
   }
+    @media (max-width: 600px) {
+    font-size: .75em;
+    }
 `;
 
 
@@ -288,3 +329,5 @@ return (
     </FormContainer>
 );
 };
+
+

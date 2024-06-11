@@ -15,11 +15,11 @@ export const PageContainer = s.div`
     justify-content: center;
     flex-flow: row nowrap;
     background-color: #71B1CD;
-    width: 100vw; /* Take up the entire width of the viewport */
-    height: 100vh; /* Take up the entire height of the viewport */
+    width: 100%; /* Take up the entire width of the viewport */
+    height: 100%; /* Take up the entire height of the viewport */
     min-width: 100vw; /* Ensure container expands if content exceeds viewport width */
-    min-height: 100vh; /* Ensure container expands if content exceeds viewport height */
-    padding-top: 7vh;
+    min-height: 93vh; /* Ensure container expands if content exceeds viewport height */
+    margin-top: 7vh;    
     @media (max-width: 1000px) {
         margin-top: 0vh;
         width: 100vw; /* Take up the entire width of the viewport */
@@ -33,9 +33,13 @@ export const InfoContainer = s.div`
     border-radius: 20px;
     border: 1px solid #FFF;
     width: 100%;
-    height: 90%;
+    height: 85vh;
+
+    
+    
     margin-left: 1vw;
     margin-right: 1vw;
+    margin-top: 3vh;
     padding: 1vh 1vw;
     display: grid;
     grid-template-rows: 30% 70%;
@@ -58,6 +62,8 @@ export const TitleContainer = s.h1`
     line-height: normal;
     letter-spacing: 17.36px;
     margin-right: 2vw;
+    margin-top: 0;
+    margin-bottom: 0;
 
     @media (max-width: 1000px) {
         font-size: 32px;
@@ -86,7 +92,8 @@ export const TitleContainerSecond = s.h1`
     line-height: normal;
     letter-spacing: 17.36px;
     align-self: flex-end;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
 
     @media (max-width: 1000px) {
         align-self: center;
@@ -141,30 +148,32 @@ export const Slogan = s.div`
     }
 `;
 export const Button = s(Link)`
-    border-radius: 20px;
-    background: #FFF;
-    color: #71B1CD;
-    font-family: ${TitleFont.style.fontFamily};
-    font-size: 2em;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 132.877%;
-    padding-left: 20vw;
-    padding-right: 20vw;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
-    text-align: center!important;
-    margin-bottom: 5vh;
-    margin-top: 5vh;
-    width: 100%;
-    @media (max-width: 1000px) {
-        margin-bottom: 0vh;
-        margin-top: 0vh;
-        font-size: 24px;  
-        padding-left: 5vh;
-        padding-right: 5vh; 
-        justify-self: flex-end;
-    }
+  text-decoration: none;
+  border-radius: 20px;
+  background: #FFF;
+  color: #71B1CD;
+  font-family: ${TitleFont.style.fontFamily};
+  font-size: 2em;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 132.877%;
+  padding-left: 20vw;
+  padding-right: 20vw;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+  text-align: center!important;
+  margin-bottom: 5vh;
+  margin-top: 5vh;
+  width: 100%;
+  box-sizing: border-box; /* Add this line */
+  @media (max-width: 1000px) {
+    margin-bottom: 0vh;
+    margin-top: 0vh;
+    font-size: 24px;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    justify-self: flex-end;
+  }
 `;
 
 
