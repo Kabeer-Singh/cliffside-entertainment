@@ -7,7 +7,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Yaldevi } from 'next/font/google';
 const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' })
 import { PageContainer, InfoContainer } from '@/components/styled-components';
-import Login from './Login'
+import SignUp from './SignUp'
 
 
 
@@ -17,7 +17,7 @@ export default function Home() {
       <PageContainer>
       <NavBar/>
       <InfoContainer>
-        <Login/>
+        <SignUp/>
       </InfoContainer>
     </PageContainer>
     )

@@ -5,7 +5,6 @@ import NavBar from '../../components/navigation';
 import React, { useRef, useEffect, useState } from 'react';
 import { Yaldevi } from 'next/font/google';
 import { Form } from '../../components/form';
-import { TitleContainer } from '@/components/styled-components';
 
 const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' });
 
