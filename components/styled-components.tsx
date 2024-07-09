@@ -34,9 +34,6 @@ export const InfoContainer = s.div`
     border: 1px solid #FFF;
     width: 100%;
     height: 85vh;
-
-    
-    
     margin-left: 1vw;
     margin-right: 1vw;
     margin-top: 3vh;
@@ -50,8 +47,6 @@ export const InfoContainer = s.div`
         justify-content: space-around;
         overflow: auto;
     }
-
-
 `;
 export const TitleContainer = s.h1`
     color: #FFF;

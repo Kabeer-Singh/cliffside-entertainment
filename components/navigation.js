@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from "react";
 import s, {keyframes} from "styled-components";
 import { useRouter } from "next/navigation";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth} from './firebase';
 import { Saira_Extra_Condensed } from "next/font/google";
 
 const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '200' });
@@ -68,17 +70,26 @@ const LoginButton = s.button`
     border-radius: 8px;
     border: 1px solid #71B1CD;
 
-    &:hover {
+    &:hover {   
+        cursor: pointer;
         color: #020307;
         background-color: #71B1CD;
     }
 `;
 
-export default function NavBar() {
+export default function NavBar(props) {
     const router = useRouter();
+
     function handleClick(route) {
         router.push(route);
     }
+
+    const [user] = useAuthState(auth);
+
+    const handleLogout = () => {
+        auth.signOut();
+      };
+
     return(
         <NavigationContainer>
             <NavBarItems>
@@ -87,7 +98,14 @@ export default function NavBar() {
                 <TabHeader onClick={() => handleClick('about')}>(about)</TabHeader>
                 <TabHeader onClick={() => handleClick('contact')}>(contact)</TabHeader>
             </NavBarItems>
-            <LoginButton onClick={() => handleClick('login')}>login</LoginButton>
+            {user ? (
+                <div>
+                  <LoginButton onClick={() => handleClick('dashboard')}>dashboard</LoginButton>
+                  <LoginButton onClick={() => handleLogout()}>logout</LoginButton>
+                </div>
+              ) : (
+                <LoginButton onClick={() => handleClick('login')}>login</LoginButton>
+              )}
         </NavigationContainer>
     )
 }
