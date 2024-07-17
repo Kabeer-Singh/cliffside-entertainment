@@ -4,8 +4,9 @@ import NavBar from '../../components/navigation';
 import styled, {css} from 'styled-components';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { PageContainer } from '@/components/styled-components'; // Ensure this path is correct
-import { Saira_Extra_Condensed } from "next/font/google";
-const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '600' });
+import { Saira_Extra_Condensed, Orbitron } from "next/font/google";
+const daFont = Orbitron({ subsets: ['latin'], weight: '700' });
+
 
 // Define styled components
 const Container = styled.div`
@@ -14,40 +15,62 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   grid-template-rows: auto 1fr;
-  background-color: #0a0e16;
+  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
   color: #c0c0c0;
   font-family: ${daFont.style.fontFamily};
 `;
 const Sidebar = styled.aside`
   grid-column: 1 / 2;
   grid-row: 1 / 3;
-  background-color: #162029;
   padding: 20px;
   margin: 30px 30px;
   display: flex;
   flex-direction: column;
   align-items: left;
   border-radius: 20px;
+  background: #FFF;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 const ProfilePicture = styled.img`
-  width: 150px;
-  height: 150px;
-  border: 2px solid red;
+  width: 175px;
+  height: 175px;
+  margin-top: 8px;
   border-radius: 20px;
+  align-self: center;
+  margin-bottom: 8px;
 `;
 const WelcomeText = styled.p`
-  font-weight: bold;
-  color: #71B1CD;;
-  font-size: 32px;
+
   margin: 0 !important;
+  text-align: center;
+  font-family: ${daFont.style.fontFamily};
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+
+
 `;
 const Username = styled.p`
-  font-weight: bold;
-  color: #1e90ff;
   margin: 0 !important;
-  font-size: 24px;
-  margin-top: -15px !important;
-  color: #71B1CD;
+  margin-top: -5px !important;
+  margin-bottom: 45px !important;
+  text-align: center;
+  font-family: ${daFont.style.fontFamily};
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
 `;
 const Menu = styled.nav`
   width: 100%;
@@ -60,27 +83,126 @@ const Menu = styled.nav`
   }
 `;
 const MenuItem = styled.li`
-  margin: 4%;
-  padding: 2%;
-  text-align: center;
-  font-size: 26px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
   cursor: pointer;
-  color: white;
+  color: #B3B3B3;
   list-style: none;
   background-color: ${(props) => (props.isActive ? '#71B1CD' : 'none')};
   ${(props) =>
     props.isActive &&
     css`
-      background-color: #71B1CD;
-      color: #0a0e16;
-      border-radius: 30px;
+      color: white;
+      border-radius: 20px;
+      background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     `}
   &:hover {
-    background-color: #71B1CD;
-    color: #0a0e16;
-    border-radius: 30px;
+    color: white;
+    border-radius: 20px;
+    background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   }
 `;
+
+const Icon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+  margin-left: 15px;
+  align-self: flex-start;
+`;
+
+const NotificationMenuItem = ({ isActive, setActiveTab }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return(
+    <MenuItem 
+      isActive={isActive} 
+      onClick={() => setActiveTab('Notifications')}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon
+        src={(isActive || isHovered) ? '/activeIcons/notificationActive.png' : '/nonActiveIcons/notification.png'}
+        alt="icon"
+      />
+      Notification Center
+    </MenuItem>
+  );
+};
+const ContractMenuItem = ({ isActive, setActiveTab }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return(
+    <MenuItem 
+      isActive={isActive} 
+      onClick={() => setActiveTab('Contracts')}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon
+        src={(isActive || isHovered) ? '/activeIcons/contractActive.png' : '/nonActiveIcons/contract.png'}
+        alt="icon"
+      />
+      Contracts
+    </MenuItem>
+  );
+};
+const ProfileMenuItem = ({ isActive, setActiveTab }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return(
+    <MenuItem 
+      isActive={isActive} 
+      onClick={() => setActiveTab('Profile')}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon
+        src={(isActive || isHovered) ? '/activeIcons/profileActive.png' : '/nonActiveIcons/profile.png'}
+        alt="icon"
+      />
+      Profile
+    </MenuItem>
+  );
+};
+const UploadMenuItem = ({ isActive, setActiveTab }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return(
+    <MenuItem 
+      isActive={isActive} 
+      onClick={() => setActiveTab('Uploads')}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon
+        src={(isActive || isHovered) ? '/activeIcons/uploadActive.png' : '/nonActiveIcons/upload.png'}
+        alt="icon"
+      />
+      Uploads
+    </MenuItem>
+  );
+};
+const SharedMenuItem = ({ isActive, setActiveTab }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return(
+    <MenuItem 
+      isActive={isActive} 
+      onClick={() => setActiveTab('Shared')}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon
+        src={(isActive || isHovered) ? '/activeIcons/sharedActive.png' : '/nonActiveIcons/shared.png'}
+        alt="icon"
+      />
+      Shared
+    </MenuItem>
+  );
+};
+
 const MenuTitle = styled.li`
   padding: 5%;
   font-size: 34px;
@@ -111,28 +233,32 @@ const SearchBar = styled.input`
   border: none;
   border-radius: 20px;
   font-size: 1em;
-  background-color: #162029;
   color: #c0c0c0;
+  border-radius: 20px;
+  background: #FFF;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 const MainContent = styled.main`
   grid-column: 2/3;
   grid-row: 2/3;
-  background-color: #162029;
   margin-bottom: 30px;
   margin-right: 30px;
   margin-top: 30px;
-  border-radius: 20px;
   padding: 20px;
+  border-radius: 20px;
+  background: #FFF;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 const RightSidebar = styled.div`
   grid-column: 3/4;
   grid-row: 1/3;
-  background-color: #162029;
   margin-top: 30px;
   margin-right: 30px;
   margin-bottom: 30px;
   border-radius: 20px;
   padding: 20px;
+  background: #FFF;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 const ProgressBarContainer = styled.div`
   width: 100%;
@@ -165,7 +291,7 @@ const Dashboard = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('Home');
+  const [activeTab, setActiveTab] = useState('Notifications');
 
   const closeUpload = () => {
     setTimeout(() => {
@@ -307,19 +433,31 @@ const Dashboard = () => {
       <NavBar />
       <Container>
         <Sidebar>
-          <ProfilePicture src="profile.jpg" alt="Profile Picture" />
+          <ProfilePicture src="jalen.jpeg" alt="Profile Picture" />
           <WelcomeText>WELCOME BACK</WelcomeText>
           <Username>Leesto</Username>
           <Menu>
             <ul>
-              <MenuTitle>MENU</MenuTitle>
-                <MenuItem isActive={activeTab==='Home'} onClick={() => {setActiveTab('Home')}}>HOME</MenuItem>
-                <MenuItem isActive={activeTab==='Contracts'} onClick={() => {setActiveTab('Contracts')}}>CONTRACTS</MenuItem>
-                <MenuItem isActive={activeTab==='Profile'} onClick={() => {setActiveTab('Profile')}}>PROFILE</MenuItem>
-              <MenuTitle>MY LIBRARY</MenuTitle>
-                <MenuItem isActive={activeTab==='Uploads'} onClick={() => {setActiveTab('Uploads')}}>UPLOADS</MenuItem>
-                <MenuItem isActive={activeTab==='Shared'} onClick={() => {setActiveTab('Shared')}}>SHARED WITH ME</MenuItem>
-                <MenuItem isActive={activeTab==='Inquiries'} onClick={() => {setActiveTab('Inquiries')}}>INQUIRIES</MenuItem>
+              <NotificationMenuItem
+                isActive={activeTab === 'Notifications'}
+                setActiveTab={setActiveTab}
+              />
+              <ContractMenuItem 
+                isActive={activeTab === 'Contracts'}
+                setActiveTab={setActiveTab}
+              />
+              <ProfileMenuItem
+                isActive={activeTab === 'Profile'}
+                setActiveTab={setActiveTab}
+              />
+              <UploadMenuItem
+                isActive={activeTab === 'Uploads'}
+                setActiveTab={setActiveTab}
+              />
+              <SharedMenuItem
+                isActive={activeTab === 'Shared'}
+                setActiveTab={setActiveTab}
+              />
             </ul>
           </Menu>
         </Sidebar>
@@ -327,7 +465,24 @@ const Dashboard = () => {
           <SearchBar type="text" placeholder="Search..." />
         </Header>
         <MainContent>
-          {/* Main content goes here */}
+          <ul>
+            {activeTab==='Uploads' && 
+              uploadedFiles.map((file) => (
+              <li key={file.id}>
+                <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
+                  {file.fileName}
+                </a>
+              </li>
+            ))}
+            {activeTab==='Shared' && 
+              sharedFiles.map((file) => (
+                <li key={file.id}>
+                  <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
+                    {file.fileName}
+                  </a>
+                </li>
+            ))}
+          </ul>
         </MainContent>
         <RightSidebar>
           {/* Right sidebar content */}

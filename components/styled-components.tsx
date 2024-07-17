@@ -1,8 +1,9 @@
 import s from 'styled-components';
-import { Yaldevi, Playfair_Display } from 'next/font/google';
+import { Yaldevi, Playfair_Display, Oswald } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
-export const TitleFont = Yaldevi({ subsets: ["latin"], weight: "600" })
+export const TitleFont = Oswald({ subsets: ["latin"], weight: "300" })
+
 export const CardFont = Playfair_Display({style: 'italic', weight: '500', subsets: ["latin"]})
 import card from '../public/card.webp';
 import {css} from 'styled-components'
@@ -14,7 +15,7 @@ export const PageContainer = s.div`
     align-items: center;
     justify-content: center;
     flex-flow: row nowrap;
-    background-color: #71B1CD;
+    background: var(--backgroundGradient2);
     width: 100%; /* Take up the entire width of the viewport */
     height: 100%; /* Take up the entire height of the viewport */
     min-width: 100vw; /* Ensure container expands if content exceeds viewport width */
@@ -51,12 +52,13 @@ export const InfoContainer = s.div`
 export const TitleContainer = s.h1`
     color: #FFF;
     font-family: ${TitleFont.style.fontFamily};
-    font-size: 7vw;
+    font-size: 115px;
+    line-height: normal;
+    letter-spacing: 20.7px;
     font-style: normal;
     font-weight: 600;
-    line-height: normal;
-    letter-spacing: 17.36px;
-    margin-right: 2vw;
+
+    margin-left: 1vw;
     margin-top: 0;
     margin-bottom: 0;
 
@@ -81,14 +83,14 @@ export const Title = s.div`
 export const TitleContainerSecond = s.h1`
     color: #FFF;
     font-family: ${TitleFont.style.fontFamily};
-    font-size: 7vw;
+    font-size: 115px;
+    line-height: normal;
+    letter-spacing: 20.7px;
     font-style: normal;
     font-weight: 600;
-    line-height: normal;
-    letter-spacing: 17.36px;
     align-self: flex-end;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: -20px;
+    margin-bottom: 0px;
 
     @media (max-width: 1000px) {
         align-self: center;
@@ -146,7 +148,7 @@ export const Button = s(Link)`
   text-decoration: none;
   border-radius: 20px;
   background: #FFF;
-  color: #71B1CD;
+  color: #142E54;
   font-family: ${TitleFont.style.fontFamily};
   font-size: 2em;
   font-style: normal;
@@ -182,7 +184,6 @@ export const InfoContainerAbout = s(InfoContainer)`
     width: 100%;
     height 100%;
 `;
-
 const keyframesAnimations = {
     buildStroke: keyframes`
       0% {
@@ -197,7 +198,6 @@ const keyframesAnimations = {
     `,
     // Define other keyframes animations as needed
   };
-
 export const Stroke = s.div`
     position: absolute;
     bottom: -20%;
@@ -212,7 +212,6 @@ export const Stroke = s.div`
     animation-fill-mode: forwards;
     z-index: 600;
 `;
-
 export const ImageParagraphContainer = s.div`
   display: flex;
   flex-direction: column;
@@ -221,7 +220,6 @@ export const ImageParagraphContainer = s.div`
     flex-direction: row;
   }
 `;
-
 export const CardsContainer = s.div`
   display: flex;
   justify-content: center; /* Center the cards horizontally */
@@ -230,7 +228,6 @@ export const CardsContainer = s.div`
     display: block
   }
 `;
-
 export const MainContainer = s.div`
   width: 17vw;
   height: 40vh;
@@ -254,7 +251,6 @@ export const MainContainer = s.div`
     transform: scale(1.1); /* Increase scale on hover */
   }
 `;
-
 export const TheCard = s.div`
   position: relative;
   top: 0;
@@ -273,7 +269,6 @@ export const TheCard = s.div`
     transform: rotateY(180deg);
   }
 `;
-
 export const TheFront = s(Image)`
   position: absolute;
   top: 0;
@@ -285,7 +280,6 @@ export const TheFront = s(Image)`
   overflow: hidden;
   color: #000;
 `;
-
 export const TheBack = s.div`
     position: absolute;
     top: 0;
@@ -312,7 +306,6 @@ export const TheBack = s.div`
     //    .2px  .2px 0 #4e5b82; // Change #000 to your desired stroke color
     // -webkit-text-stroke: .2px #4e5b82; // 1px stroke width with black color
 `;
-
 export const BackCardContainer = s.div`
     display: flex;
     flex-direction: column;
@@ -321,8 +314,6 @@ export const BackCardContainer = s.div`
     height: 100%; // Ensure it uses the full height of TheBack
     width: 100%; // Ensure it uses the full width of TheBack
 `;
-
-
 // Keyframes for wave animation
 export const waveAnimation = keyframes`
   0% {
@@ -332,7 +323,6 @@ export const waveAnimation = keyframes`
     margin-left: -1600px;
   }
 `;
-
 export const swellAnimation = keyframes`
   0%, 100% {
     transform: translate3d(0, -25px, 0);
@@ -372,12 +362,6 @@ export const Wave = s.div<WaveProps>`
     ? css`${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite, ${swellAnimation} 7s ease -1.25s infinite` 
     : css`${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite`};
 `;
-
-
-
-
-
-
 export const ContactUsButton = s(Link)`
     color: #000;
     text-align: center;

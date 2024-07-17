@@ -9,6 +9,7 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+    --backgroundGradient2: linear-gradient(180deg, #142E54 0%, #2C66BA 100%);
   }
 }
 

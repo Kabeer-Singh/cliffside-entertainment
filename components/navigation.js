@@ -1,12 +1,14 @@
-import React, {useState, useEffect} from "react";
-import s, {keyframes} from "styled-components";
+import React, { useCallback } from "react";
+import s from "styled-components";
 import { useRouter } from "next/navigation";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth} from './firebase';
-import { Saira_Extra_Condensed } from "next/font/google";
+import { auth } from './firebase';
+import { Oswald } from "next/font/google";
+const daFont = Oswald({ subsets: ['latin'], weight: '300' });
+import Image from 'next/image';
+import logoImage from '../public/logos/logoNoText.png';
 
-const daFont = Saira_Extra_Condensed({ subsets: ['latin'], weight: '200' });
-
+// Styled components
 const NavigationContainer = s.div`
   display: flex;
   align-items: center;
@@ -14,98 +16,143 @@ const NavigationContainer = s.div`
   height: 7vh;
   width: 100vw;
   position: fixed;
-  top: 0px;
-  background-color: #020307;
+  top: 0;
+  background-color: white;
   z-index: 1000;
+  padding: 0 24px;
 `;
+
 const NavBarItems = s.div`
-    margin-left: 24px;
-    display: flex;
-    align-items: center;
-    justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
+
+const NavBarLeft = s.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  margin-left: 24px;
+`;
+
+const NavBarCenter = s.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+`;
+
+const NavBarRight = s.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+`;
+
 const TabHeader = s.div`
-    color: #71B1CD;
-    font-family: ${daFont.style.fontFamily};
-    font-size: 24px;
-    font-style: normal;
-    line-height: normal;
-    margin-right: 34px;
+  font-family: ${daFont.style.fontFamily};
+  background: var(--backgroundGradient, linear-gradient(180deg, #3E517C 30%, #4A527A 60%, #142E54 100%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 5.04px;
+  font-size: 20px;
+  margin-right: 34px;
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  & > * {
     position: relative;
+    z-index: 1;
+  }
 
-    &:hover {
-        cursor: pointer;
-    }
-    /* Define the styles for the text */
-    & > * {
-        position: relative;
-        z-index: 1; /* Ensure the text is above the underline */
-    }
-    /* Define the styles for the underline */
-    &::after {
-        width: ${({ isActive }) => (isActive ? '100%' : '0')}; /* If active, set width to 100%, otherwise 0 */
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: -2px; /* Adjust this value based on your design */
-        width: 0; /* Initial width */
-        height: 2px; /* Thickness of the underline */
-        background-color: #71B1CD; /* Color of the underline */
-        transition: width 0.3s; /* Smooth transition for the width change */
-    }
-    /* Apply the underline animation on hover */
-    &:hover::after {
-        width: 100%; /* Expand the width on hover */
-    }
+  &::after {
+    width: ${({ isActive }) => (isActive ? '100%' : '0')};
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(180deg, #3E517C 30%, #4A527A 60%, #142E54 100%);
+    transition: width 0.3s;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
 `;
+
 const LoginButton = s.button`
-    color: #71B1CD;
-    font-family: ${daFont.style.fontFamily};
-    font-size: 24px;
-    font-style: normal;
-    line-height: normal;
-    padding-left: 22px;
-    padding-right: 22px;
-    margin-right: 24px;
-    border-radius: 8px;
-    border: 1px solid #71B1CD;
-
-    &:hover {   
-        cursor: pointer;
-        color: #020307;
-        background-color: #71B1CD;
-    }
+  font-family: ${daFont.style.fontFamily};
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 5.04px;
+  padding: 5px 22px;
+  margin-left: 10px;
+  color: white;
+  background: var(--backgroundGradient2);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: none;
+  text-align: center;
+  margin-right: 24px;
 `;
 
-export default function NavBar(props) {
-    const router = useRouter();
+// Memoized Logo component
+const Logo = React.memo(() => (
+  <Image
+    alt="logo"
+    src={logoImage}
+    width={45}
+    height="auto"
+    style={{ marginRight: '37px' }}
+  />
+));
 
-    function handleClick(route) {
-        router.push(route);
-    }
+const NavBar = React.memo(() => {
+  const router = useRouter();
+  const [user] = useAuthState(auth);
 
-    const [user] = useAuthState(auth);
+  const handleClick = useCallback((route) => {
+    router.push(route);
+  }, [router]);
 
-    const handleLogout = () => {
-        auth.signOut();
-      };
+  const handleLogout = useCallback(() => {
+    auth.signOut();
+  }, []);
 
-    return(
-        <NavigationContainer>
-            <NavBarItems>
-                <TabHeader onClick={() => handleClick('/')}>(home)</TabHeader>
-                <TabHeader onClick={() => handleClick('artists')}>(artists)</TabHeader>
-                <TabHeader onClick={() => handleClick('about')}>(about)</TabHeader>
-                <TabHeader onClick={() => handleClick('contact')}>(contact)</TabHeader>
-            </NavBarItems>
-            {user ? (
-                <div>
-                  <LoginButton onClick={() => handleClick('dashboard')}>dashboard</LoginButton>
-                  <LoginButton onClick={() => handleLogout()}>logout</LoginButton>
-                </div>
-              ) : (
-                <LoginButton onClick={() => handleClick('login')}>login</LoginButton>
-              )}
-        </NavigationContainer>
-    )
-}
+  return (
+    <NavigationContainer>
+      <NavBarLeft>
+        <TabHeader onClick={() => handleClick('/')}>(home)</TabHeader>
+        <TabHeader onClick={() => handleClick('artists')}>(artists)</TabHeader>
+        <TabHeader onClick={() => handleClick('about')}>(about)</TabHeader>
+        <TabHeader onClick={() => handleClick('contact')}>(contact)</TabHeader>
+      </NavBarLeft>
+      <NavBarCenter>
+        <Logo />
+      </NavBarCenter>
+      <NavBarRight>
+        {user ? (
+          <>
+            <LoginButton onClick={() => handleClick('dashboard')}>dashboard</LoginButton>
+            <LoginButton onClick={handleLogout}>logout</LoginButton>
+          </>
+        ) : (
+          <LoginButton onClick={() => handleClick('login')}>LOGIN</LoginButton>
+        )}
+      </NavBarRight>
+    </NavigationContainer>
+  );
+});
+export default NavBar;
