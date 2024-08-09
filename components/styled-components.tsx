@@ -2,12 +2,19 @@ import s from 'styled-components';
 import { Yaldevi, Playfair_Display, Oswald } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
-export const TitleFont = Oswald({ subsets: ["latin"], weight: "300" })
 
 export const CardFont = Playfair_Display({style: 'italic', weight: '500', subsets: ["latin"]})
 import card from '../public/card.webp';
+
 import {css} from 'styled-components'
 const keyframes = require('styled-components').keyframes;
+
+export const Bold = Oswald({ subsets: ["latin"], weight: '700' })
+export const Medium = Oswald({ subsets: ["latin"], weight: "500" })
+export const Regular = Oswald({ subsets: ["latin"], weight: "400" })
+export const Light = Oswald({ subsets: ["latin"], weight: "300" })
+export const TitleFont = Oswald({ subsets: ["latin"], weight: "300" })
+export const ExtraLight = Oswald({ subsets: ["latin"], weight: "200" })
 
 //home page exports
 export const PageContainer = s.div`
@@ -34,10 +41,11 @@ export const InfoContainer = s.div`
     border-radius: 20px;
     border: 1px solid #FFF;
     width: 100%;
-    height: 85vh;
+    height: 87vh;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
     margin-left: 1vw;
     margin-right: 1vw;
-    margin-top: 3vh;
     padding: 1vh 1vw;
     display: grid;
     grid-template-rows: 30% 70%;
@@ -50,13 +58,12 @@ export const InfoContainer = s.div`
     }
 `;
 export const TitleContainer = s.h1`
+    all: unset;
     color: #FFF;
-    font-family: ${TitleFont.style.fontFamily};
     font-size: 115px;
     line-height: normal;
     letter-spacing: 20.7px;
     font-style: normal;
-    font-weight: 600;
 
     margin-left: 1vw;
     margin-top: 0;
@@ -123,54 +130,42 @@ export const RightColumn = s.div`
     align-items: center;
     justify-content: center;
     flex-flow: column nowrap;
-    grid-row: 2 / span 1; /* Bottom right column spans one row */
-    grid-column: 2 / span 1; /* Bottom right column spans one column */
-    margin-right: 2vw;
-    margin-left: 2vw;
     @media (max-width: 1000px) {
         margin-top: 0vh;
 
     }
 `;
 export const Slogan = s.div`
-    color: #FFF;
-    font-family: ${TitleFont.style.fontFamily};
-    font-size: 2vw;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
     margin-bottom: 1vh;
     @media (max-width: 1000px) {
         font-size: 24px;
     }
+    color: #FBFFF8;
+    text-align: center;
+    font-family: ${Regular.style.fontFamily};
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 9.24px;
 `;
 export const Button = s(Link)`
-  text-decoration: none;
-  border-radius: 20px;
-  background: #FFF;
-  color: #142E54;
-  font-family: ${TitleFont.style.fontFamily};
-  font-size: 2em;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 132.877%;
-  padding-left: 20vw;
-  padding-right: 20vw;
-  padding-top: 1vh;
-  padding-bottom: 1vh;
-  text-align: center!important;
-  margin-bottom: 5vh;
-  margin-top: 5vh;
-  width: 100%;
-  box-sizing: border-box; /* Add this line */
-  @media (max-width: 1000px) {
-    margin-bottom: 0vh;
-    margin-top: 0vh;
-    font-size: 24px;
-    padding-left: 5vw;
-    padding-right: 5vw;
-    justify-self: flex-end;
-  }
+text-decoration: none;
+border-radius: 20px;
+background: #FFF;
+color: #142E54;
+font-family: '__Oswald_621431','__Oswald_Fallback_621431';
+font-size: 40px;
+font-style: normal;
+font-weight: 600;
+line-height: 132.877%;
+padding-left: 8vw;
+padding-right: 8vw;
+padding-top: 1vh;
+padding-bottom: 1vh;
+text-align: center!important;
+box-sizing: border-box;
+width: 90%;
 `;
 
 

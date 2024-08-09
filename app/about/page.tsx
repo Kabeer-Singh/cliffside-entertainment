@@ -2,15 +2,25 @@
 import NavBar from '../../components/navigation'
 import { PageContainer, InfoContainerAbout, TitleContainer, ImageParagraphContainer, ContactUsButton, TheCard, MainContainer, TheFront, TheBack, CardsContainer, Stroke, BackCardContainer, Ocean, Wave  } from '@/components/styled-components';
 import card from '../../public/card.png';
+import s from 'styled-components';
+import VideoPlayer from '@/components/VideoPlayer';
 
+const videoStyles = {
+  width: '100vw',
+  maxWidth: '100%',
+  height: '100%',
+};
+const PageContainerEdited = s(PageContainer)`
+  flex-flow: column nowrap;
+`
 
 export default function Home() {
     return(
-        <PageContainer>
+        <PageContainerEdited>
             <NavBar/>
+            <VideoPlayer src="/videos/aboutUs.mp4" type="video/mp4" style={videoStyles}/>
             <InfoContainerAbout>
               <TitleContainer style={{position: 'relative'}}>(about) <Stroke /> {/* Stroke component */}</TitleContainer>
-              
               <ImageParagraphContainer>
                 <CardsContainer>
                   <MainContainer>
@@ -64,6 +74,6 @@ export default function Home() {
               </ImageParagraphContainer>
               <ContactUsButton href='/contact'>CONTACT US</ContactUsButton>
             </InfoContainerAbout>
-        </PageContainer>
+        </PageContainerEdited>
     )
 }

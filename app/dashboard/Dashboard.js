@@ -1,12 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { auth, firestore } from '../../components/firebase';
-import NavBar from '../../components/navigation';
-import styled, {css} from 'styled-components';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { PageContainer } from '@/components/styled-components'; // Ensure this path is correct
+import React, { useState, useEffect, useRef } from "react";
+import { auth, firestore } from "../../components/firebase";
+import NavBar from "../../components/navigation";
+import styled, { css } from "styled-components";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { PageContainer } from "@/components/styled-components"; // Ensure this path is correct
 import { Saira_Extra_Condensed, Orbitron } from "next/font/google";
-const daFont = Orbitron({ subsets: ['latin'], weight: '700' });
+const daFont = Orbitron({ subsets: ["latin"], weight: "700" });
 
+import Sidebar from "./components/Sidebar";
+import ListItem from "./components/ListItem";
+import FileListHeader from "./components/FileListHeader";
+import RightSidebar from "./components/RightSidebar";
 
 // Define styled components
 const Container = styled.div`
@@ -15,202 +24,21 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   grid-template-rows: auto 1fr;
-  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
+  background: var(
+    --backgroundGradient2,
+    linear-gradient(180deg, #142e54 0%, #2c66ba 100%)
+  );
   color: #c0c0c0;
   font-family: ${daFont.style.fontFamily};
 `;
-const Sidebar = styled.aside`
-  grid-column: 1 / 2;
-  grid-row: 1 / 3;
-  padding: 20px;
-  margin: 30px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  border-radius: 20px;
-  background: #FFF;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-`;
-const ProfilePicture = styled.img`
-  width: 175px;
-  height: 175px;
-  margin-top: 8px;
-  border-radius: 20px;
-  align-self: center;
-  margin-bottom: 8px;
-`;
-const WelcomeText = styled.p`
-
-  margin: 0 !important;
-  text-align: center;
-  font-family: ${daFont.style.fontFamily};
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-
-
-`;
-const Username = styled.p`
-  margin: 0 !important;
-  margin-top: -5px !important;
-  margin-bottom: 45px !important;
-  text-align: center;
-  font-family: ${daFont.style.fontFamily};
-  font-size: 25px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-`;
-const Menu = styled.nav`
-  width: 100%;
-  ul {
-    padding-inline-start: 0; /* Remove default padding */
-    list-style-type: none; /* Remove default list style */
-    padding: 0; /* Ensure no padding on all sides */
-    margin-block-start: 0;
-    margin-block-end: 0;
-  }
-`;
-const MenuItem = styled.li`
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  color: #B3B3B3;
-  list-style: none;
-  background-color: ${(props) => (props.isActive ? '#71B1CD' : 'none')};
-  ${(props) =>
-    props.isActive &&
-    css`
-      color: white;
-      border-radius: 20px;
-      background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
-      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    `}
-  &:hover {
-    color: white;
-    border-radius: 20px;
-    background: var(--backgroundGradient2, linear-gradient(180deg, #142E54 0%, #2C66BA 100%));
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  }
-`;
-
-const Icon = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-right: 15px;
-  margin-left: 15px;
-  align-self: flex-start;
-`;
-
-const NotificationMenuItem = ({ isActive, setActiveTab }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return(
-    <MenuItem 
-      isActive={isActive} 
-      onClick={() => setActiveTab('Notifications')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Icon
-        src={(isActive || isHovered) ? '/activeIcons/notificationActive.png' : '/nonActiveIcons/notification.png'}
-        alt="icon"
-      />
-      Notification Center
-    </MenuItem>
-  );
-};
-const ContractMenuItem = ({ isActive, setActiveTab }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return(
-    <MenuItem 
-      isActive={isActive} 
-      onClick={() => setActiveTab('Contracts')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Icon
-        src={(isActive || isHovered) ? '/activeIcons/contractActive.png' : '/nonActiveIcons/contract.png'}
-        alt="icon"
-      />
-      Contracts
-    </MenuItem>
-  );
-};
-const ProfileMenuItem = ({ isActive, setActiveTab }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return(
-    <MenuItem 
-      isActive={isActive} 
-      onClick={() => setActiveTab('Profile')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Icon
-        src={(isActive || isHovered) ? '/activeIcons/profileActive.png' : '/nonActiveIcons/profile.png'}
-        alt="icon"
-      />
-      Profile
-    </MenuItem>
-  );
-};
-const UploadMenuItem = ({ isActive, setActiveTab }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return(
-    <MenuItem 
-      isActive={isActive} 
-      onClick={() => setActiveTab('Uploads')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Icon
-        src={(isActive || isHovered) ? '/activeIcons/uploadActive.png' : '/nonActiveIcons/upload.png'}
-        alt="icon"
-      />
-      Uploads
-    </MenuItem>
-  );
-};
-const SharedMenuItem = ({ isActive, setActiveTab }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return(
-    <MenuItem 
-      isActive={isActive} 
-      onClick={() => setActiveTab('Shared')}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Icon
-        src={(isActive || isHovered) ? '/activeIcons/sharedActive.png' : '/nonActiveIcons/shared.png'}
-        alt="icon"
-      />
-      Shared
-    </MenuItem>
-  );
-};
-
 const MenuTitle = styled.li`
   padding: 5%;
   font-size: 34px;
   text-align: left;
-  color: #71B1CD;
+  color: #71b1cd;
   list-style: none;
   text-decoration: underline;
-`
+`;
 const Header = styled.header`
   height: 15%;
   all: unset;
@@ -235,8 +63,10 @@ const SearchBar = styled.input`
   font-size: 1em;
   color: #c0c0c0;
   border-radius: 20px;
-  background: #FFF;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+    0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+    0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 const MainContent = styled.main`
   grid-column: 2/3;
@@ -244,74 +74,64 @@ const MainContent = styled.main`
   margin-bottom: 30px;
   margin-right: 30px;
   margin-top: 30px;
-  padding: 20px;
   border-radius: 20px;
-  background: #FFF;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
+    0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  overflow: scroll;
+
 `;
-const RightSidebar = styled.div`
-  grid-column: 3/4;
-  grid-row: 1/3;
-  margin-top: 30px;
-  margin-right: 30px;
-  margin-bottom: 30px;
-  border-radius: 20px;
-  padding: 20px;
-  background: #FFF;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-`;
-const ProgressBarContainer = styled.div`
+const ListContainer = styled.div`
   width: 100%;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 20px;
-`;
-const ProgressBar = styled.div`
-  height: 10px; /* Set a fixed height for the progress bar */
-  transition: width 0.2s ease-in-out;
-  width: ${props => props.progress}%;
-  background-color: #1e90ff;
-`;
-const SuccessMessage = styled.p`
-  color: green;
-  margin-top: 10px;
-`;
-const ErrorMessage = styled.p`
-  color: red;
-  margin-top: 10px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const Dashboard = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [sharedFiles, setSharedFiles] = useState([]);
+  const [allFiles, setAllFiles] = useState([]);
+  const [fileTab, setFileTab] = useState("All");
   const [file, setFile] = useState(null);
+  const [fileSize, setFileSize] = useState(null);
   const [progress, setProgress] = useState(0);
-  const [downloadURL, setDownloadURL] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [downloadURL, setDownloadURL] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('Notifications');
+  const [activeTab, setActiveTab] = useState("Notifications");
+  const [editingFile, setEditingFile] = useState(null);
+  const [newFileName, setNewFileName] = useState("");
+  const [sortAttribute, setSortAttribute] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const closeUpload = () => {
     setTimeout(() => {
-      setSuccessMessage('');
+      setSuccessMessage("");
       setProgress(0);
       setFile(null);
-      setDownloadURL('');
-      setErrorMessage('');
-      fileInputRef.current.value = '';
+      setFileSize(null);
+      setDownloadURL("");
+      setErrorMessage("");
+      fileInputRef.current.value = "";
+      fileInputRef.current.type = "text";
+      fileInputRef.current.type = "file";
     }, 3000);
   };
-  
-  const setFileInDatabase = async () => {
+
+  const setFileInDatabase = async (url) => {
     const user = auth.currentUser;
     if (user && file) {
-      await firestore.collection('files').add({
+      await firestore.collection("files").add({
         userId: user.uid,
         fileName: file.name,
-        fileUrl: downloadURL,
+        fileUrl: url,
+        fileSize: fileSize,
         sharedWith: [],
+        uploadDateAndTime: new Date().toLocaleString("en-US", {
+          timeZone: "America/New_York",
+        }), // 8/19/2020, 9:29:51 AM. (date and time in a specific timezone)
       });
     }
     closeUpload();
@@ -322,37 +142,40 @@ const Dashboard = () => {
       const selectedFile = e.target.files[0];
       const fileType = selectedFile.type;
       const fileSize = selectedFile.size;
-  
+
       // Check file type
-      const allowedTypes = ['audio/mpeg', 'audio/wav'];
+      const allowedTypes = ["audio/mpeg", "audio/wav"];
       if (!allowedTypes.includes(fileType)) {
-        setErrorMessage('Invalid file type. Only .mp3 and .wav files are allowed.');
+        setErrorMessage(
+          "Invalid file type. Only .mp3 and .wav files are allowed."
+        );
         setTimeout(() => {
-          setErrorMessage('');
+          setErrorMessage("");
           if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            fileInputRef.current.value = "";
           }
           setFile(null);
         }, 3000);
         return;
       }
-  
+
       // Check file size (60MB = 60 * 1024 * 1024 bytes)
       const maxSize = 60 * 1024 * 1024;
       if (fileSize > maxSize) {
-        setErrorMessage('File size exceeds 60MB.');
+        setErrorMessage("File size exceeds 60MB.");
         setTimeout(() => {
-          setErrorMessage('');
+          setErrorMessage("");
           if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            fileInputRef.current.value = "";
           }
           setFile(null);
         }, 3000);
         return;
       }
-  
+
       setFile(selectedFile);
-      setErrorMessage('');
+      setFileSize(fileSize);
+      setErrorMessage("");
     }
   };
 
@@ -364,36 +187,38 @@ const Dashboard = () => {
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
-    uploadTask.on('state_changed',
+    uploadTask.on(
+      "state_changed",
       (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setProgress(progress);
-        console.log('Upload is ' + progress + '% done');
+        console.log("Upload is " + progress + "% done");
       },
       (error) => {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setDownloadURL(downloadURL);
-          console.log('File available at', downloadURL);
+        getDownloadURL(uploadTask.snapshot.ref).then((curr) => {
+          console.log("File available at", curr);
+          setDownloadURL(curr);
+          setSuccessMessage("File uploaded successfully!");
+          setFileInDatabase(curr);
         });
-        setSuccessMessage('File uploaded successfully!');
-        setFileInDatabase();
       }
-    );   
+    );
   };
 
   const fetchFiles = async () => {
     const user = auth.currentUser;
     const uploadsSnapshot = await firestore
-      .collection('files')
-      .where('userId', '==', user.uid)
+      .collection("files")
+      .where("userId", "==", user.uid)
       .get();
 
     const sharedSnapshot = await firestore
-      .collection('files')
-      .where('sharedWith', 'array-contains', user.email)
+      .collection("files")
+      .where("sharedWith", "array-contains", user.email)
       .get();
 
     setUploadedFiles(
@@ -404,11 +229,31 @@ const Dashboard = () => {
     );
   };
 
+  const deleteFile = async (fileId) => {
+    await firestore.collection("files").doc(fileId).delete();
+    fetchFiles();
+  };
+
+  const startEditing = (file) => {
+    setEditingFile(file);
+    setNewFileName(file.fileName);
+  };
+
+  const saveNewFileName = async (file) => {
+    await firestore.collection("files").doc(file.id).update({
+      fileName: newFileName,
+      uploadedAt: new Date(),
+    });
+    setEditingFile(null);
+    setNewFileName("");
+    fetchFiles();
+  };
+
   const getDocumentById = async (collectionName, documentId) => {
     try {
       const docRef = firestore.collection(collectionName).doc(documentId);
       const doc = await docRef.get();
-  
+
       if (doc.exists) {
         console.log("Document data:", doc.data());
         return doc.data();
@@ -422,79 +267,92 @@ const Dashboard = () => {
     }
   };
 
+  const handleSort = (attribute) => {
+    setSortAttribute(attribute);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const handleFileTabChange = (tab) => {
+    setFileTab(tab);
+  };
+
+  const getFilteredFiles = () => {
+    let files = [];
+    switch (fileTab) {
+      case 'All':
+        files = allFiles;
+        break;
+      case 'Uploads':
+        files = uploadedFiles;
+        break;
+      case 'Shared':
+        files = sharedFiles;
+        break;
+      default:
+        break;
+    }
+    if (searchQuery) {
+      files = files.filter(file => file.fileName.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    if (sortAttribute) {
+      files = files.sort((a, b) => {
+        if (a[sortAttribute] < b[sortAttribute]) return -1;
+        if (a[sortAttribute] > b[sortAttribute]) return 1;
+        return 0;
+      });
+    }
+    return files;
+  };
+
   useEffect(() => {
     fetchFiles();
     console.log(auth.currentUser.uid);
-    getDocumentById('users', auth.currentUser.uid);
+    getDocumentById("users", auth.currentUser.uid);
   }, []);
+  useEffect(() => {
+    setAllFiles([...uploadedFiles, ...sharedFiles]);
+  }, [uploadedFiles, sharedFiles]);
 
   return (
     <PageContainer>
       <NavBar />
       <Container>
-        <Sidebar>
-          <ProfilePicture src="jalen.jpeg" alt="Profile Picture" />
-          <WelcomeText>WELCOME BACK</WelcomeText>
-          <Username>Leesto</Username>
-          <Menu>
-            <ul>
-              <NotificationMenuItem
-                isActive={activeTab === 'Notifications'}
-                setActiveTab={setActiveTab}
-              />
-              <ContractMenuItem 
-                isActive={activeTab === 'Contracts'}
-                setActiveTab={setActiveTab}
-              />
-              <ProfileMenuItem
-                isActive={activeTab === 'Profile'}
-                setActiveTab={setActiveTab}
-              />
-              <UploadMenuItem
-                isActive={activeTab === 'Uploads'}
-                setActiveTab={setActiveTab}
-              />
-              <SharedMenuItem
-                isActive={activeTab === 'Shared'}
-                setActiveTab={setActiveTab}
-              />
-            </ul>
-          </Menu>
-        </Sidebar>
+        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         <Header>
           <SearchBar type="text" placeholder="Search..." />
         </Header>
         <MainContent>
-          <ul>
-            {activeTab==='Uploads' && 
-              uploadedFiles.map((file) => (
-              <li key={file.id}>
-                <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
-                  {file.fileName}
-                </a>
-              </li>
-            ))}
-            {activeTab==='Shared' && 
-              sharedFiles.map((file) => (
-                <li key={file.id}>
-                  <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
-                    {file.fileName}
-                  </a>
-                </li>
-            ))}
-          </ul>
+          {activeTab === "File Management" && (
+            <ListContainer>
+              <FileListHeader
+                fileTab={fileTab}
+                handleSort={handleSort}
+                handleSearch={handleSearch}
+                handleFileTabChange={handleFileTabChange}
+              />
+              {getFilteredFiles().map(file => (
+                <ListItem
+                  key={file.id}
+                  file={file}
+                  editingFile={editingFile}
+                  startEditing={setEditingFile}
+                  saveNewFileName={setNewFileName}
+                />
+              ))}
+            </ListContainer>
+          )}
         </MainContent>
-        <RightSidebar>
-          {/* Right sidebar content */}
-          <input type="file" onChange={handleFileChange} ref={fileInputRef} />
-          <button onClick={handleUpload}>Upload</button>
-          <ProgressBarContainer>
-            <ProgressBar progress={progress} />
-          </ProgressBarContainer>
-          <span>{Math.round(progress)}%</span>
-          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        </RightSidebar>
+        <RightSidebar
+          handleFileChange={handleFileChange}
+          handleUpload={handleUpload}
+          progress={progress}
+          successMessage={successMessage}
+          errorMessage={errorMessage}
+          ref={fileInputRef}
+        />
       </Container>
     </PageContainer>
   );

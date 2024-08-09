@@ -20,6 +20,7 @@ const NavigationContainer = s.div`
   background-color: white;
   z-index: 1000;
   padding: 0 24px;
+  margin-bottom: 3vh;
 `;
 
 const NavBarItems = s.div`
@@ -134,10 +135,10 @@ const NavBar = React.memo(() => {
   return (
     <NavigationContainer>
       <NavBarLeft>
-        <TabHeader onClick={() => handleClick('/')}>(home)</TabHeader>
-        <TabHeader onClick={() => handleClick('artists')}>(artists)</TabHeader>
-        <TabHeader onClick={() => handleClick('about')}>(about)</TabHeader>
-        <TabHeader onClick={() => handleClick('contact')}>(contact)</TabHeader>
+        <TabHeader onClick={() => handleClick('/')}>HOME</TabHeader>
+        <TabHeader onClick={() => handleClick('artists')}>ARTISTS</TabHeader>
+        <TabHeader onClick={() => handleClick('about')}>ABOUT</TabHeader>
+        <TabHeader onClick={() => handleClick('contact')}>CONTACT</TabHeader>
       </NavBarLeft>
       <NavBarCenter>
         <Logo />
