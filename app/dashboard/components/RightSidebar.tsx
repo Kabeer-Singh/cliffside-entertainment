@@ -90,7 +90,7 @@ const ErrorMessage = styled.p`
 
 interface RightSidebarProps {
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUpload: () => void;
+  handleUpload: (file: File, index: number) => void;
   handleUploadAll: () => void;
   progresses: number[];
   successMessage: string;
