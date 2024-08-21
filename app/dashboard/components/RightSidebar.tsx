@@ -8,7 +8,8 @@ const RightSidebarContainer = styled.div`
 `;
 
 const DropzoneContainer = styled.div<{ fileSelectionOccured: boolean }>`
-  border: ${({ fileSelectionOccured }) => (fileSelectionOccured ? 'none' : '2px dashed #389afe')};
+  border: ${({ fileSelectionOccured }) =>
+    fileSelectionOccured ? "none" : "2px dashed #389afe"};
   text-align: center;
   cursor: pointer;
   height: 100%;
@@ -87,74 +88,105 @@ const ErrorMessage = styled.p`
   margin-top: 10px;
 `;
 
-const RightSidebar = forwardRef(function RightSidebar(props, ref) {
-  const {
-    handleFileChange,
-    handleUpload,
-    handleUploadAll,
-    progresses,
-    successMessage,
-    errorMessage,
-    selectedFiles,
-  } = props;
+interface RightSidebarProps {
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleUpload: () => void;
+  handleUploadAll: () => void;
+  progresses: number[];
+  successMessage: string;
+  errorMessage: string;
+  selectedFiles: File[];
+}
 
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      handleFileChange({ target: { files: acceptedFiles } });
-    },
-    [handleFileChange]
-  );
+const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
+  function RightSidebar(props, ref) {
+    const {
+      handleFileChange,
+      handleUpload,
+      handleUploadAll,
+      progresses,
+      successMessage,
+      errorMessage,
+      selectedFiles,
+    } = props;
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    multiple: true,
-    maxFiles: 5,
-    accept: {
-      "audio/mpeg": [".mp3"],
-      "audio/wav": [".wav"],
-    },
-    maxSize: 60 * 1024 * 1024, // 60MB
-  });
+    const onDrop = useCallback(
+      (acceptedFiles: File[]) => {
+        const dataTransfer = new DataTransfer();
 
-  const fileSelectionOccured = selectedFiles.length !== 0;
+        acceptedFiles.forEach((file) => {
+          dataTransfer.items.add(file);
+        });
 
-  return (
-    <RightSidebarContainer>
-      <DropzoneContainer fileSelectionOccured={fileSelectionOccured} {...getRootProps()}>
-        <input {...getInputProps()} />
-        {!fileSelectionOccured && 
-          <>
-            <div>Click to Upload or Drag'N'Drop</div>
-            <div>Files must be .mp3 .wav - 60MB max</div>
-          </>
-        }
-      
+        const input = document.createElement("input");
+        input.type = "file";
+        input.files = dataTransfer.files;
 
-      {selectedFiles.length > 1 && (
-        <button onClick={handleUploadAll}>Upload All</button>
-      )}
+        const event = new Event("change", { bubbles: true });
+        Object.defineProperty(event, "target", {
+          writable: false,
+          value: input,
+        });
 
-      {selectedFiles.map((file: any, index: any) => (
-        <FileItem key={index}>
-          <FileIcon src="/icons/file-icon.png" alt="file icon" />
-          <FileDetails>
-            <FileName>{file.name}</FileName>
-            <FileSize>
-              {Math.round(progresses[index])}% | {(file.size / (1024 * 1024)).toFixed(2)} MB
-            </FileSize>
-            <ProgressBar progress={progresses[index]} />
-          </FileDetails>
-          <MoreOptionsButton onClick={() => handleUpload(file, index)}>
-            Upload
-          </MoreOptionsButton>
-        </FileItem>
-      ))}
+        handleFileChange(event as unknown as React.ChangeEvent<HTMLInputElement>);
+      },
+      [handleFileChange]
+    );
 
-      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      </DropzoneContainer>
-    </RightSidebarContainer>
-  );
-});
+    const { getRootProps, getInputProps } = useDropzone({
+      onDrop,
+      multiple: true,
+      maxFiles: 5,
+      accept: {
+        "audio/mpeg": [".mp3"],
+        "audio/wav": [".wav"],
+      },
+      maxSize: 60 * 1024 * 1024, // 60MB
+    });
+
+    const fileSelectionOccured = selectedFiles.length !== 0;
+
+    return (
+      <RightSidebarContainer>
+        <DropzoneContainer
+          fileSelectionOccured={fileSelectionOccured}
+          {...getRootProps()}
+        >
+          <input {...getInputProps()} />
+          {!fileSelectionOccured && (
+            <>
+              <div>Click to Upload or Drag'N'Drop</div>
+              <div>Files must be .mp3 .wav - 60MB max</div>
+            </>
+          )}
+
+          {selectedFiles.length > 1 && (
+            <button onClick={handleUploadAll}>Upload All</button>
+          )}
+
+          {selectedFiles.map((file: any, index: any) => (
+            <FileItem key={index}>
+              <FileIcon src="/icons/file-icon.png" alt="file icon" />
+              <FileDetails>
+                <FileName>{file.name}</FileName>
+                <FileSize>
+                  {Math.round(progresses[index])}% |{" "}
+                  {(file.size / (1024 * 1024)).toFixed(2)} MB
+                </FileSize>
+                <ProgressBar progress={progresses[index]} />
+              </FileDetails>
+              <MoreOptionsButton onClick={() => handleUpload(file, index)}>
+                Upload
+              </MoreOptionsButton>
+            </FileItem>
+          ))}
+
+          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        </DropzoneContainer>
+      </RightSidebarContainer>
+    );
+  }
+);
 
 export default RightSidebar;
