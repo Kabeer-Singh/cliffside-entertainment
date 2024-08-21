@@ -1,16 +1,27 @@
 "use client";
-import NavBar from '../components/navigation'
-import React, { useRef, useEffect, useState } from 'react';
-import s from 'styled-components';
-import logo from '../public/logos/mockUpLogo.png';
-import { PageContainer, InfoContainer, Title, TitleContainer, TitleContainerSecond, LeftColumn, Logo, RightColumn, Slogan, Button } from '../components/styled-components'
-import { Oswald } from 'next/font/google';
-import VideoPlayer from '../components/VideoPlayer';
-const Bold = Oswald({ subsets: ["latin"], weight: '700' })
-const Medium = Oswald({ subsets: ["latin"], weight: "500" })
-const Regular = Oswald({ subsets: ["latin"], weight: "400" })
-const Light = Oswald({ subsets: ["latin"], weight: "300" })
-const ExtraLight = Oswald({ subsets: ["latin"], weight: "200" })
+import NavBar from "../components/navigation";
+import React, { useRef, useEffect, useState } from "react";
+import s from "styled-components";
+import logo from "../public/logos/mockUpLogo.png";
+import {
+  PageContainer,
+  InfoContainer,
+  Title,
+  TitleContainer,
+  TitleContainerSecond,
+  LeftColumn,
+  Logo,
+  RightColumn,
+  Slogan,
+  Button,
+} from "../components/styled-components";
+import { Oswald } from "next/font/google";
+import VideoPlayer from "../components/VideoPlayer";
+const Bold = Oswald({ subsets: ["latin"], weight: "700" });
+const Medium = Oswald({ subsets: ["latin"], weight: "500" });
+const Regular = Oswald({ subsets: ["latin"], weight: "400" });
+const Light = Oswald({ subsets: ["latin"], weight: "300" });
+const ExtraLight = Oswald({ subsets: ["latin"], weight: "200" });
 
 const SloganContainer = s.div`
 color: #FFF;
@@ -23,24 +34,43 @@ line-height: normal;
 letter-spacing: normal;
 display: flex;
 flex-flow: row nowrap;
-`
-const PageContainerEdited = s(PageContainer)`
+`;
+const PageContainerEdited = s.div`
   flex-flow: column nowrap;
-`
+      display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--backgroundGradient2);
+    width: 100%; /* Take up the entire width of the viewport */
+    height: 100%; /* Take up the entire height of the viewport */
+    min-width: 100vw; /* Ensure container expands if content exceeds viewport width */
+    min-height: 93vh; /* Ensure container expands if content exceeds viewport height */
+    margin-top: 7vh;    
+    @media (max-width: 1000px) {
+        margin-top: 0vh;
+        width: 100vw; /* Take up the entire width of the viewport */
+        height: 100vh; /* Take up the entire height of the viewport */
+        min-width: 100vw; /* Ensure container expands if content exceeds viewport width */
+        min-height: 100vh; /* Ensure container expands if content exceeds viewport height */
+        overflow: auto;
+    }
+`;
 
 const videoStyles = {
-  width: '100vw',
-  maxWidth: '100%',
-  height: '100%',
+  width: "100vw",
+  maxWidth: "100%",
+  height: "100%",
 };
 
-
 export default function Home() {
-
   return (
     <PageContainerEdited>
-      <NavBar/>
-      <VideoPlayer src="/videos/v2export.mp4" type="video/mp4" style={videoStyles}/>
+      <NavBar />
+      <VideoPlayer
+        src="/videos/v2export.mp4"
+        type="video/mp4"
+        style={videoStyles}
+      />
       <InfoContainer>
         <Title>
           <TitleContainer>
@@ -57,20 +87,30 @@ export default function Home() {
           </TitleContainerSecond>
         </Title>
         <LeftColumn>
-          <Logo src={logo} alt='logo'/>
+          <Logo src={logo} alt="logo" />
         </LeftColumn>
         <RightColumn>
-          <SloganContainer> (
-            <div  style={{display: 'flex', alignItems:'center', justifyContent:'flex-end', flexFlow: 'column nowrap',marginBottom: '45px',}}>
+          <SloganContainer>
+            {" "}
+            (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                flexFlow: "column nowrap",
+                marginBottom: "45px",
+              }}
+            >
               <Slogan>RISE TO NEW HEIGHTS.</Slogan>
               <Slogan>ELEVATE YOUR SOUND.</Slogan>
               <Slogan>TAKE THE LEAP.</Slogan>
             </div>
-          )
+            )
           </SloganContainer>
-          <Button href='/contact'>JOIN OUR ROSTER</Button>
+          <Button href="/contact">JOIN OUR ROSTER</Button>
         </RightColumn>
       </InfoContainer>
     </PageContainerEdited>
-  )
+  );
 }

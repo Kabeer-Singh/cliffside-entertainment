@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import s from "styled-components";
 import { useRouter } from "next/navigation";
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -109,6 +109,63 @@ const LoginButton = s.button`
   margin-right: 24px;
 `;
 
+const DrawerToggle = s.button`
+  font-size: 30px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+  top: 10px;
+  left: 5px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+
+  &:before {
+    content: ${({ isOpen }) => (isOpen ? '"\\2715"' : '"\\2630"')}; /* "X" or three lines */
+    font-size: 30px;
+  }
+`;
+
+const Drawer = s.div`
+  position: fixed;
+
+
+  display:  ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+  transition: opacity 2s ease-out;
+  opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
+
+
+  top: 0;
+  left: ${({ isOpen }) => (isOpen ? '0' : '-100%')};
+  width: 100vw;
+  height: 100vh;
+  background: rgba(51, 51, 51); /* Semi-transparent background */
+  transition: left 2s ease;
+  z-index: 999;
+  padding: 60px 20px;
+  backdrop-filter: blur(15px); /* Stronger blur for better background effect */
+
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  nav ul li {
+    padding: 15px 0;
+  }
+
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+  }
+`;
+
 // Memoized Logo component
 const Logo = React.memo(() => (
   <Image
@@ -116,13 +173,15 @@ const Logo = React.memo(() => (
     src={logoImage}
     width={45}
     height="auto"
-    style={{ marginRight: '37px' }}
+    style={{ marginRight: '37px', cursor: 'pointer' }}
   />
 ));
 
 const NavBar = React.memo(() => {
   const router = useRouter();
   const [user] = useAuthState(auth);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleClick = useCallback((route) => {
     router.push(route);
@@ -132,17 +191,62 @@ const NavBar = React.memo(() => {
     auth.signOut();
   }, []);
 
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+  const handleResize = useCallback(() => {
+    if (window.innerWidth <= 768) {
+      setIsMobile(true);
+    } else {
+      setIsMobile(false);
+      setDrawerOpen(false); // Close the drawer when switching to desktop
+    }
+  }, []);
+
+  useEffect(() => {
+    handleResize(); // Set initial state
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
+
+  if (isMobile) {
+    return (
+      <>
+        <DrawerToggle isOpen={drawerOpen} onClick={toggleDrawer} />
+        <Drawer isOpen={drawerOpen}>
+          <nav>
+            <ul>
+              <li><a onClick={() => { toggleDrawer(); handleClick('/'); }}>Home</a></li>
+              <li><a onClick={() => { toggleDrawer(); handleClick('about'); }}>About</a></li>
+              <li><a onClick={() => { toggleDrawer(); handleClick('contact'); }}>Contact</a></li>
+              {user ? (
+                <>
+                  <li><a onClick={() => { toggleDrawer(); handleClick('dashboard'); }}>Dashboard</a></li>
+                  <li><a onClick={() => { toggleDrawer(); handleLogout(); }}>Logout</a></li>
+                </>
+              ) : (
+                <li><a onClick={() => { toggleDrawer(); handleClick('login'); }}>Login</a></li>
+              )}
+            </ul>
+          </nav>
+        </Drawer>
+      </>
+    );
+  }
+
   return (
     <NavigationContainer>
       <NavBarLeft>
         <TabHeader onClick={() => handleClick('/')}>HOME</TabHeader>
-        <TabHeader onClick={() => handleClick('artists')}>ARTISTS</TabHeader>
         <TabHeader onClick={() => handleClick('about')}>ABOUT</TabHeader>
         <TabHeader onClick={() => handleClick('contact')}>CONTACT</TabHeader>
       </NavBarLeft>
-      <NavBarCenter>
+
+      <NavBarCenter onClick={() => handleClick('/')}>
         <Logo />
       </NavBarCenter>
+
       <NavBarRight>
         {user ? (
           <>
@@ -156,4 +260,5 @@ const NavBar = React.memo(() => {
     </NavigationContainer>
   );
 });
+
 export default NavBar;

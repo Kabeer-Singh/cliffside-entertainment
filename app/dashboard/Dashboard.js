@@ -18,16 +18,17 @@ import FileListHeader from "./components/FileListHeader";
 import RightSidebar from "./components/RightSidebar";
 
 // Define styled components
+const PageContainerDashboard = styled(PageContainer)`
+ background: #e0e0e0;
+`
 const Container = styled.div`
+  grid-template-rows: 30% 1fr; /* Ensuring the first row is 35% of the container's height */
+  grid-template-columns: 1fr 3fr 1fr;
+
   width: 100%;
   height: 93vh;
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: auto 1fr;
-  background: var(
-    --backgroundGradient2,
-    linear-gradient(180deg, #142e54 0%, #2c66ba 100%)
-  );
+  background: white;
   color: #c0c0c0;
   font-family: ${daFont.style.fontFamily};
 `;
@@ -40,19 +41,17 @@ const MenuTitle = styled.li`
   text-decoration: underline;
 `;
 const Header = styled.header`
-  height: 15%;
-  all: unset;
   grid-column: 2/3;
   grid-row: 1 / 2;
-  background-color: #162029;
+  background-color: #f5f6f9;
   margin-top: 30px;
   margin-right: 30px;
-  margin-bottom: 30px;
+  margin-left: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  padding-top: 20px;
+  padding: 20px;
 `;
 const SearchBar = styled.input`
   width: 100%;
@@ -71,21 +70,19 @@ const SearchBar = styled.input`
 const MainContent = styled.main`
   grid-column: 2/3;
   grid-row: 2/3;
-  margin-bottom: 30px;
-  margin-right: 30px;
-  margin-top: 30px;
+  margin: 30px;
   border-radius: 20px;
   background: #fff;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-    0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  overflow: scroll;
-
+  overflow-x: hidden;
 `;
 const ListContainer = styled.div`
   width: 100%;
   border-radius: 20px;
   background: white;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* Prevent the entire container from scrolling */
 `;
 
 const Dashboard = () => {
@@ -93,9 +90,14 @@ const Dashboard = () => {
   const [sharedFiles, setSharedFiles] = useState([]);
   const [allFiles, setAllFiles] = useState([]);
   const [fileTab, setFileTab] = useState("All");
-  const [file, setFile] = useState(null);
-  const [fileSize, setFileSize] = useState(null);
-  const [progress, setProgress] = useState(0);
+
+  // const [file, setFile] = useState(null);
+  // const [fileSize, setFileSize] = useState(null);
+  // const [progress, setProgress] = useState(0);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [fileSizes, setFileSizes] = useState([]);
+  const [progresses, setProgresses] = useState([]);
+
   const [downloadURL, setDownloadURL] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -104,95 +106,147 @@ const Dashboard = () => {
   const [editingFile, setEditingFile] = useState(null);
   const [newFileName, setNewFileName] = useState("");
   const [sortAttribute, setSortAttribute] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const closeUpload = () => {
+  const closeUpload = (file, index) => {
     setTimeout(() => {
+      // Clear success message and other states
       setSuccessMessage("");
-      setProgress(0);
-      setFile(null);
-      setFileSize(null);
-      setDownloadURL("");
       setErrorMessage("");
-      fileInputRef.current.value = "";
-      fileInputRef.current.type = "text";
-      fileInputRef.current.type = "file";
+      setDownloadURL("");
+  
+      // Remove the completed file from the progresses and selectedFiles arrays
+      setProgresses((prevProgresses) => 
+        prevProgresses.filter((_, i) => i !== index)
+      );
+  
+      setSelectedFiles((prevSelectedFiles) => 
+        prevSelectedFiles.filter((_, i) => i !== index)
+      );
     }, 3000);
   };
-
-  const setFileInDatabase = async (url) => {
+  
+  const setFileInDatabase = async (file, downloadURL, index) => {
     const user = auth.currentUser;
     if (user && file) {
       await firestore.collection("files").add({
         userId: user.uid,
         fileName: file.name,
-        fileUrl: url,
-        fileSize: fileSize,
+        fileUrl: downloadURL,
         sharedWith: [],
-        uploadDateAndTime: new Date().toLocaleString("en-US", {
-          timeZone: "America/New_York",
-        }), // 8/19/2020, 9:29:51 AM. (date and time in a specific timezone)
       });
     }
-    closeUpload();
+    closeUpload(file, index);
+  };
+  
+  const handleUploadAll = () => {
+    selectedFiles.forEach((file, index) => handleUpload(file, index));
   };
 
+  // const handleFileChange = (e) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const selectedFile = e.target.files[0];
+  //     const fileType = selectedFile.type;
+  //     const fileSize = selectedFile.size;
+
+  //     // Check file type
+  //     const allowedTypes = ["audio/mpeg", "audio/wav"];
+  //     if (!allowedTypes.includes(fileType)) {
+  //       setErrorMessage(
+  //         "Invalid file type. Only .mp3 and .wav files are allowed."
+  //       );
+  //       setTimeout(() => {
+  //         setErrorMessage("");
+  //         if (fileInputRef.current) {
+  //           fileInputRef.current.value = "";
+  //         }
+  //         setFile(null);
+  //       }, 3000);
+  //       return;
+  //     }
+
+  //     // Check file size (60MB = 60 * 1024 * 1024 bytes)
+  //     const maxSize = 60 * 1024 * 1024;
+  //     if (fileSize > maxSize) {
+  //       setErrorMessage("File size exceeds 60MB.");
+  //       setTimeout(() => {
+  //         setErrorMessage("");
+  //         if (fileInputRef.current) {
+  //           fileInputRef.current.value = "";
+  //         }
+  //         setFile(null);
+  //       }, 3000);
+  //       return;
+  //     }
+
+  //     setFile(selectedFile);
+  //     setFileSize(fileSize);
+  //     setErrorMessage("");
+  //   }
+  // };
+
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      const fileType = selectedFile.type;
-      const fileSize = selectedFile.size;
+    const files = e.target.files || e;
 
-      // Check file type
+    if (files && files.length > 0) {
+      const maxFiles = 5;
       const allowedTypes = ["audio/mpeg", "audio/wav"];
-      if (!allowedTypes.includes(fileType)) {
+      const maxSize = 60 * 1024 * 1024; // 60MB
+
+      // Validate number of files
+      if (files.length > maxFiles) {
         setErrorMessage(
-          "Invalid file type. Only .mp3 and .wav files are allowed."
+          `You can only upload up to ${maxFiles} files at a time.`
         );
-        setTimeout(() => {
-          setErrorMessage("");
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
-          setFile(null);
-        }, 3000);
+        setTimeout(() => setErrorMessage(""), 3000);
         return;
       }
 
-      // Check file size (60MB = 60 * 1024 * 1024 bytes)
-      const maxSize = 60 * 1024 * 1024;
-      if (fileSize > maxSize) {
-        setErrorMessage("File size exceeds 60MB.");
-        setTimeout(() => {
-          setErrorMessage("");
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
-          setFile(null);
-        }, 3000);
-        return;
+      // Validate file types and sizes
+      const validFiles = [];
+      const validSizes = [];
+
+      for (let file of files) {
+        if (!allowedTypes.includes(file.type)) {
+          setErrorMessage(
+            `Invalid file type: ${file.name}. Only .mp3 and .wav files are allowed.`
+          );
+          setTimeout(() => setErrorMessage(""), 3000);
+          return;
+        }
+
+        if (file.size > maxSize) {
+          setErrorMessage(`File size exceeds 60MB: ${file.name}.`);
+          setTimeout(() => setErrorMessage(""), 3000);
+          return;
+        }
+
+        validFiles.push(file);
+        validSizes.push(file.size);
       }
 
-      setFile(selectedFile);
-      setFileSize(fileSize);
+      setSelectedFiles(validFiles);
+      setFileSizes(validSizes);
+      setProgresses(new Array(validFiles.length).fill(0));
       setErrorMessage("");
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
+  const handleUpload = async (file, index) => {
     const storage = getStorage();
     const storageRef = ref(storage, file.name);
     const metadata = { contentType: file.type };
-
+  
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-
+  
     uploadTask.on(
       "state_changed",
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
+        const updatedProgresses = [...progresses];
+        updatedProgresses[index] = progress;
+        setProgresses(updatedProgresses);
         console.log("Upload is " + progress + "% done");
       },
       (error) => {
@@ -203,11 +257,12 @@ const Dashboard = () => {
           console.log("File available at", curr);
           setDownloadURL(curr);
           setSuccessMessage("File uploaded successfully!");
-          setFileInDatabase(curr);
+          setFileInDatabase(file, curr, index);
         });
       }
     );
   };
+  
 
   const fetchFiles = async () => {
     const user = auth.currentUser;
@@ -282,20 +337,22 @@ const Dashboard = () => {
   const getFilteredFiles = () => {
     let files = [];
     switch (fileTab) {
-      case 'All':
+      case "All":
         files = allFiles;
         break;
-      case 'Uploads':
+      case "Uploads":
         files = uploadedFiles;
         break;
-      case 'Shared':
+      case "Shared":
         files = sharedFiles;
         break;
       default:
         break;
     }
     if (searchQuery) {
-      files = files.filter(file => file.fileName.toLowerCase().includes(searchQuery.toLowerCase()));
+      files = files.filter((file) =>
+        file.fileName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
     if (sortAttribute) {
       files = files.sort((a, b) => {
@@ -312,6 +369,7 @@ const Dashboard = () => {
     console.log(auth.currentUser.uid);
     getDocumentById("users", auth.currentUser.uid);
   }, []);
+
   useEffect(() => {
     setAllFiles([...uploadedFiles, ...sharedFiles]);
   }, [uploadedFiles, sharedFiles]);
@@ -321,9 +379,19 @@ const Dashboard = () => {
       <NavBar />
       <Container>
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <Header>
-          <SearchBar type="text" placeholder="Search..." />
-        </Header>
+        {activeTab === "File Management" && (
+          <Header>
+            <RightSidebar
+              selectedFiles={selectedFiles}
+              handleFileChange={handleFileChange}
+              handleUpload={handleUpload}
+              handleUploadAll={handleUploadAll}
+              progresses={progresses}
+              successMessage={successMessage}
+              errorMessage={errorMessage}
+            />
+          </Header>
+        )}
         <MainContent>
           {activeTab === "File Management" && (
             <ListContainer>
@@ -333,7 +401,8 @@ const Dashboard = () => {
                 handleSearch={handleSearch}
                 handleFileTabChange={handleFileTabChange}
               />
-              {getFilteredFiles().map(file => (
+              <div style={{overflow: 'scroll'}}>
+              {getFilteredFiles().map((file) => (
                 <ListItem
                   key={file.id}
                   file={file}
@@ -342,17 +411,10 @@ const Dashboard = () => {
                   saveNewFileName={setNewFileName}
                 />
               ))}
+              </div>
             </ListContainer>
           )}
         </MainContent>
-        <RightSidebar
-          handleFileChange={handleFileChange}
-          handleUpload={handleUpload}
-          progress={progress}
-          successMessage={successMessage}
-          errorMessage={errorMessage}
-          ref={fileInputRef}
-        />
       </Container>
     </PageContainer>
   );

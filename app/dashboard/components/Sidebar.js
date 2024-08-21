@@ -5,18 +5,15 @@ import { Orbitron } from "next/font/google";
 const daFont = Orbitron({ subsets: ["latin"], weight: "700" });
 
 const SidebarContainer = styled.aside`
-  grid-column: 1 / 2;
-  grid-row: 1 / 3;
-  padding: 20px;
-  margin: 30px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-    0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-    0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+grid-column: 1/2;
+grid-row: 1/3;
+/* margin: 30px 30px; */
+display: flex;
+flex-direction: column;
+align-items: left;
+/* border-radius: 20px; */
+background: #f5f6f9;
+padding: 20px;
 `;
 const ProfilePicture = styled.img`
   width: 175px;

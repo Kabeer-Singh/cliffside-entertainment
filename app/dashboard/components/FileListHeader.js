@@ -4,10 +4,13 @@ import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: 100%;
+  width: 99%;
   background: white;
   border-radius: 20px;
-  border: 2px solid gray;
+  border: 2px solid #ebedef;
+  margin-bottom: 20px;
+  z-index: 100;
+  position: sticky;
 `;
 
 const TabAndSearchContainer = styled.div`
@@ -15,10 +18,10 @@ const TabAndSearchContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 75px;
-  border-bottom: 2px solid gray;
   max-width: 100%;
   padding-left: 30px;
   padding-right: 30px;
+  border-bottom: 2px solid #ebedef;
 `;
 
 const TabContainer = styled.div`
@@ -43,9 +46,9 @@ const Tab = styled.div`
 `;
 
 const SearchBar = styled.input`
-  background-color: #e0e0e0;
+  background-color: #ebedef;
   border: none !important;
-  width: 20%;
+  width: 30%;
   height: 30px;
   border-radius: 20px;
   padding: 0px 15px;
