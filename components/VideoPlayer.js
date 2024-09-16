@@ -32,6 +32,8 @@ const VideoPlayer = ({ src, type, style }) => {
         video.currentTime = video.duration;
         video.pause();
       }}
+      src={src}
+      type={type}
     >
       <source src={src} type={type} />
       Your browser does not support the video tag.

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { auth, firestore } from "../../components/firebase";
 import NavBar from "../../components/navigation";
 import styled, { css } from "styled-components";
+import { v4 as uuidv4 } from "uuid";
 import {
   getStorage,
   ref,
@@ -19,12 +20,11 @@ import RightSidebar from "./components/RightSidebar";
 
 // Define styled components
 const PageContainerDashboard = styled(PageContainer)`
- background: #e0e0e0;
-`
+  background: #e0e0e0;
+`;
 const Container = styled.div`
   grid-template-rows: 30% 1fr; /* Ensuring the first row is 35% of the container's height */
   grid-template-columns: 1fr 3fr 1fr;
-
   width: 100%;
   height: 93vh;
   display: grid;
@@ -84,6 +84,16 @@ const ListContainer = styled.div`
   height: 100%;
   overflow: hidden; /* Prevent the entire container from scrolling */
 `;
+const MockUp = styled.div`
+  grid-column: 3/4;
+  grid-row: 1/3;
+  margin-top: 30px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+  border-radius: 20px;
+  padding: 20px;
+  background: red;
+`;
 
 const Dashboard = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -91,16 +101,12 @@ const Dashboard = () => {
   const [allFiles, setAllFiles] = useState([]);
   const [fileTab, setFileTab] = useState("All");
 
-  // const [file, setFile] = useState(null);
-  // const [fileSize, setFileSize] = useState(null);
-  // const [progress, setProgress] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileSizes, setFileSizes] = useState([]);
   const [progresses, setProgresses] = useState([]);
 
   const [downloadURL, setDownloadURL] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("Notifications");
   const [editingFile, setEditingFile] = useState(null);
@@ -108,161 +114,120 @@ const Dashboard = () => {
   const [sortAttribute, setSortAttribute] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const closeUpload = (file, index) => {
+  const [userData, setUserData] = useState({
+    profilePicUrl: "",
+    email: "",
+    name: "",
+  });
+  const [profilePic, setProfilePic] = useState("");
+
+  const closeUpload = (file, revisedFile) => {
+    setSuccessMessage("File " + file.name + " uploaded successfully!");
+
     setTimeout(() => {
-      // Clear success message and other states
       setSuccessMessage("");
-      setErrorMessage("");
       setDownloadURL("");
-  
-      // Remove the completed file from the progresses and selectedFiles arrays
-      setProgresses((prevProgresses) => 
-        prevProgresses.filter((_, i) => i !== index)
+
+      setProgresses((prevProgresses) => {
+        const updatedProgresses = { ...prevProgresses };
+        delete updatedProgresses[file.id];
+        return updatedProgresses;
+      });
+
+      setSelectedFiles((prevSelectedFiles) =>
+        prevSelectedFiles.filter((selectedFile) => selectedFile.id !== file.id)
       );
-  
-      setSelectedFiles((prevSelectedFiles) => 
-        prevSelectedFiles.filter((_, i) => i !== index)
-      );
+
+      //adding the successfully uploaded files to uploadedFiles & allFiles
+      setUploadedFiles((prevFiles) => [...prevFiles, revisedFile]);
+      setAllFiles((prevFiles) => [...prevFiles, revisedFile]);
     }, 3000);
   };
-  
-  const setFileInDatabase = async (file, downloadURL, index) => {
+
+  const setFileInDatabase = async (file, downloadURL) => {
     const user = auth.currentUser;
+
     if (user && file) {
-      await firestore.collection("files").add({
-        userId: user.uid,
-        fileName: file.name,
-        fileUrl: downloadURL,
-        sharedWith: [],
-      });
+      try {
+        // Add file metadata to Firestore and capture the document reference
+        const docRef = await firestore.collection("files").add({
+          userId: user.uid,
+          fileName: file.name,
+          fileUrl: downloadURL,
+          sharedWith: [],
+        });
+
+        // Capture the Firestore document ID and add it to the file object
+        const fileWithId = {
+          ...file,
+          id: docRef.id, // Firestore document ID
+          fileUrl: downloadURL, // File URL
+          fileName: file.name, // File name
+        };
+
+        // Pass the updated file object with ID to closeUpload
+        closeUpload(file, fileWithId);
+      } catch (error) {
+        console.error("Error uploading file to Firestore:", error);
+      }
     }
-    closeUpload(file, index);
-  };
-  
-  const handleUploadAll = () => {
-    selectedFiles.forEach((file, index) => handleUpload(file, index));
   };
 
-  // const handleFileChange = (e) => {
-  //   if (e.target.files && e.target.files[0]) {
-  //     const selectedFile = e.target.files[0];
-  //     const fileType = selectedFile.type;
-  //     const fileSize = selectedFile.size;
-
-  //     // Check file type
-  //     const allowedTypes = ["audio/mpeg", "audio/wav"];
-  //     if (!allowedTypes.includes(fileType)) {
-  //       setErrorMessage(
-  //         "Invalid file type. Only .mp3 and .wav files are allowed."
-  //       );
-  //       setTimeout(() => {
-  //         setErrorMessage("");
-  //         if (fileInputRef.current) {
-  //           fileInputRef.current.value = "";
-  //         }
-  //         setFile(null);
-  //       }, 3000);
-  //       return;
-  //     }
-
-  //     // Check file size (60MB = 60 * 1024 * 1024 bytes)
-  //     const maxSize = 60 * 1024 * 1024;
-  //     if (fileSize > maxSize) {
-  //       setErrorMessage("File size exceeds 60MB.");
-  //       setTimeout(() => {
-  //         setErrorMessage("");
-  //         if (fileInputRef.current) {
-  //           fileInputRef.current.value = "";
-  //         }
-  //         setFile(null);
-  //       }, 3000);
-  //       return;
-  //     }
-
-  //     setFile(selectedFile);
-  //     setFileSize(fileSize);
-  //     setErrorMessage("");
-  //   }
-  // };
+  const handleUploadAll = async () => {
+    for (let i = 0; i < selectedFiles.length; i++) {
+      await handleUpload(selectedFiles[i]);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Slight delay for sequential processing
+    }
+  };
 
   const handleFileChange = (e) => {
     const files = e.target.files || e;
-
-    if (files && files.length > 0) {
-      const maxFiles = 5;
-      const allowedTypes = ["audio/mpeg", "audio/wav"];
-      const maxSize = 60 * 1024 * 1024; // 60MB
-
-      // Validate number of files
-      if (files.length > maxFiles) {
-        setErrorMessage(
-          `You can only upload up to ${maxFiles} files at a time.`
-        );
-        setTimeout(() => setErrorMessage(""), 3000);
-        return;
-      }
-
-      // Validate file types and sizes
-      const validFiles = [];
-      const validSizes = [];
-
-      for (let file of files) {
-        if (!allowedTypes.includes(file.type)) {
-          setErrorMessage(
-            `Invalid file type: ${file.name}. Only .mp3 and .wav files are allowed.`
-          );
-          setTimeout(() => setErrorMessage(""), 3000);
-          return;
-        }
-
-        if (file.size > maxSize) {
-          setErrorMessage(`File size exceeds 60MB: ${file.name}.`);
-          setTimeout(() => setErrorMessage(""), 3000);
-          return;
-        }
-
-        validFiles.push(file);
-        validSizes.push(file.size);
-      }
-
-      setSelectedFiles(validFiles);
-      setFileSizes(validSizes);
-      setProgresses(new Array(validFiles.length).fill(0));
-      setErrorMessage("");
+    //setting valid files after completed validation
+    // Validate file types and sizes
+    const validFiles = [];
+    const validSizes = [];
+    for (let file of files) {
+      // Assign a unique ID to each file
+      file.id = uuidv4();
+      validFiles.push(file);
+      validSizes.push(file.size);
     }
+    setSelectedFiles(validFiles);
+    setFileSizes(validSizes);
+    setProgresses(new Array(validFiles.length).fill(0));
   };
 
-  const handleUpload = async (file, index) => {
-    const storage = getStorage();
-    const storageRef = ref(storage, file.name);
-    const metadata = { contentType: file.type };
-  
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-  
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        const updatedProgresses = [...progresses];
-        updatedProgresses[index] = progress;
-        setProgresses(updatedProgresses);
-        console.log("Upload is " + progress + "% done");
-      },
-      (error) => {
-        console.error("Error uploading file:", error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((curr) => {
-          console.log("File available at", curr);
-          setDownloadURL(curr);
-          setSuccessMessage("File uploaded successfully!");
-          setFileInDatabase(file, curr, index);
-        });
-      }
-    );
+  const handleUpload = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage();
+      const storageRef = ref(storage, file.name);
+      const metadata = { contentType: file.type };
+
+      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgresses((prev) => ({ ...prev, [file.id]: progress }));
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          console.error("Error uploading file:", error);
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            setFileInDatabase(file, downloadURL).then(() => {
+              resolve(); // Resolve the promise once the file is successfully uploaded
+            });
+          });
+        }
+      );
+    });
   };
-  
 
   const fetchFiles = async () => {
     const user = auth.currentUser;
@@ -291,17 +256,20 @@ const Dashboard = () => {
 
   const startEditing = (file) => {
     setEditingFile(file);
-    setNewFileName(file.fileName);
   };
 
-  const saveNewFileName = async (file) => {
-    await firestore.collection("files").doc(file.id).update({
+  const saveNewFileName = async (newFileName) => {
+    console.log('entering saveNEWFileName');
+    console.log(editingFile)
+    console.log(newFileName);
+    await firestore.collection("files").doc(editingFile.id).update({
       fileName: newFileName,
       uploadedAt: new Date(),
     });
     setEditingFile(null);
-    setNewFileName("");
+    setNewFileName('');
     fetchFiles();
+    console.log('exiting saveNewFileName');
   };
 
   const getDocumentById = async (collectionName, documentId) => {
@@ -321,6 +289,40 @@ const Dashboard = () => {
       return null;
     }
   };
+
+  useEffect(() => {
+    fetchFiles();
+    const fetchUserData = async () => {
+      try {
+        // Fetch the user data from Firestore
+        const userDoc = await firestore
+          .collection("users")
+          .doc(auth.currentUser.uid)
+          .get(); // replace 'userId' with the actual ID
+
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          setUserData({
+            profilePicUrl: data?.profilePicUrl || "",
+            email: data?.email || "",
+            name: data?.name || "",
+          });
+
+          // Fetch the profile picture from Firebase Storage
+          if (data?.profilePicUrl) {
+            const storage = getStorage();
+            const imageRef = ref(storage, data.profilePicUrl);
+            const url = await getDownloadURL(imageRef);
+            setProfilePic(url);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSort = (attribute) => {
     setSortAttribute(attribute);
@@ -365,7 +367,6 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchFiles();
     console.log(auth.currentUser.uid);
     getDocumentById("users", auth.currentUser.uid);
   }, []);
@@ -378,7 +379,12 @@ const Dashboard = () => {
     <PageContainer>
       <NavBar />
       <Container>
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          profilePic={profilePic}
+          userName={userData.name}
+        />
         {activeTab === "File Management" && (
           <Header>
             <RightSidebar
@@ -388,7 +394,6 @@ const Dashboard = () => {
               handleUploadAll={handleUploadAll}
               progresses={progresses}
               successMessage={successMessage}
-              errorMessage={errorMessage}
             />
           </Header>
         )}
@@ -401,20 +406,29 @@ const Dashboard = () => {
                 handleSearch={handleSearch}
                 handleFileTabChange={handleFileTabChange}
               />
-              <div style={{overflow: 'scroll'}}>
-              {getFilteredFiles().map((file) => (
-                <ListItem
-                  key={file.id}
-                  file={file}
-                  editingFile={editingFile}
-                  startEditing={setEditingFile}
-                  saveNewFileName={setNewFileName}
-                />
-              ))}
+              <div
+                style={{
+                  overflow: "scroll",
+                  borderBottom: "2px inset #ebedef",
+                  borderRadius: "20px",
+                  width: '99%',
+                }}
+              >
+                {getFilteredFiles().map((file) => (
+                  <ListItem
+                    key={file.id}
+                    file={file}
+                    editingFile={editingFile}
+                    startEditing={startEditing}
+                    saveNewFileName={saveNewFileName}
+                    deleteFile = {deleteFile}
+                  />
+                ))}
               </div>
             </ListContainer>
           )}
         </MainContent>
+        <MockUp>HELLO</MockUp>
       </Container>
     </PageContainer>
   );

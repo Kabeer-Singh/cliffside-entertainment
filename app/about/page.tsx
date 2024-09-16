@@ -1,79 +1,85 @@
 "use client";
-import NavBar from '../../components/navigation'
-import { PageContainer, InfoContainerAbout, TitleContainer, ImageParagraphContainer, ContactUsButton, TheCard, MainContainer, TheFront, TheBack, CardsContainer, Stroke, BackCardContainer, Ocean, Wave  } from '@/components/styled-components';
-import card from '../../public/card.png';
+import NavBar from '../../components/navigation';
+import {
+  PageContainer,
+  InfoContainer,
+  InfoContainerAbout,
+  TitleContainer,
+  ImageParagraphContainer,
+  ContactUsButton,
+  TheCard,
+  MainContainer,
+  TheFront,
+  TheBack,
+  CardsContainer,
+  Stroke,
+  BackCardContainer,
+  Ocean,
+  Wave,
+} from '@/components/styled-components';
 import s from 'styled-components';
 import VideoPlayer from '@/components/VideoPlayer';
+import { useEffect, useState } from 'react';
 
+// Update video styles to cover the entire viewport
 const videoStyles = {
   width: '100vw',
-  maxWidth: '100%',
-  height: '100%',
+  marginTop: '6vh',
+  height: '100vh', // Make the video fill the entire height of the viewport
+  position: 'fixed', // Keep the video fixed in place
+  top: 0,
+  left: 0,
+  objectFit: 'cover',
 };
+
+// Update PageContainer to occupy the full height and prevent overflow
 const PageContainerEdited = s(PageContainer)`
   flex-flow: column nowrap;
-`
+  height: 100vh;
+  overflow: hidden; // Prevent scrolling
+`;
 
 export default function Home() {
-    return(
-        <PageContainerEdited>
-            <NavBar/>
-            <VideoPlayer src="/videos/aboutUs.mp4" type="video/mp4" style={videoStyles}/>
-            <InfoContainerAbout>
-              <TitleContainer style={{position: 'relative'}}>(about) <Stroke /> {/* Stroke component */}</TitleContainer>
-              <ImageParagraphContainer>
-                <CardsContainer>
-                  <MainContainer>
-                    <TheCard>
-                      <TheFront src={card} alt='card'>
-                      </TheFront>
-                      <TheBack>
-                        <BackCardContainer>
-                          <div style={{ zIndex: 10, padding: '2vw 3vh'}}>LA BASED <br></br>SYNC & CREATIVE POWERHOUSE.</div>
-                          <Ocean>
-                            <Wave />
-                            <Wave type="second" />
-                          </Ocean>
-                        </BackCardContainer>
-                      </TheBack>
-                    </TheCard>
-                  </MainContainer>
+  const [videoSource, setVideoSource] = useState<string>('');
+  const [type, setType] = useState<string>('');
 
-                  <MainContainer>
-                    <TheCard>
-                      <TheFront src={card} alt='card'>
-                      </TheFront>
-                      <TheBack>
-                        <BackCardContainer>
-                          <div style={{ zIndex: 10, padding: '2vw 3vh'}}>We CREATE OPPORTUNITIES IN FILM, TV, ADS, & MORE</div>
-                          <Ocean>
-                            <Wave />
-                            <Wave type="second" />
-                          </Ocean>
-                        </BackCardContainer>
-                      </TheBack>
-                    </TheCard>
-                  </MainContainer>
+  useEffect(() => {
+    const getBrowser = () => {
+      const userAgent = navigator.userAgent;
 
-                  <MainContainer>
-                    <TheCard>
-                      <TheFront src={card} alt='card'>
-                      </TheFront>
-                      <TheBack>
-                        <BackCardContainer>
-                          <div style={{ zIndex: 10, padding: '2vw 3vh'}}>We CONNECT ARTISTS WITH INDUSTRY PROFESSIONALS.</div>
-                          <Ocean>
-                            <Wave />
-                            <Wave type="second" />
-                          </Ocean>
-                        </BackCardContainer>
-                      </TheBack>
-                    </TheCard>
-                  </MainContainer>
-                </CardsContainer>
-              </ImageParagraphContainer>
-              <ContactUsButton href='/contact'>CONTACT US</ContactUsButton>
-            </InfoContainerAbout>
-        </PageContainerEdited>
-    )
+      if (
+        userAgent.includes('Chrome') &&
+        !userAgent.includes('Edge') &&
+        !userAgent.includes('OPR')
+      ) {
+        return 'Chrome';
+      } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+        return 'Safari';
+      } else {
+        return 'Other';
+      }
+    };
+
+    const browser = getBrowser();
+
+    if (browser === 'Chrome') {
+      setVideoSource(() => '/videos/chromeYolo.webm');
+      setType(() => 'video/webm');
+      console.log('CHROME');
+    } else if (browser === 'Safari') {
+      setVideoSource(() => '/videos/yolo.mov');
+      setType(() => 'video/quicktime');
+      console.log('SAFARI');
+    } else {
+      setVideoSource(() => '/videos/chromeYolo.webm');
+      setType(() => 'video/webm');
+    }
+  }, []);
+
+  return (
+    <PageContainerEdited>
+      <NavBar />
+      <VideoPlayer src={videoSource} type={type} style={videoStyles} />
+    </PageContainerEdited>
+  );
 }

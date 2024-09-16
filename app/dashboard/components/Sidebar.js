@@ -5,15 +5,15 @@ import { Orbitron } from "next/font/google";
 const daFont = Orbitron({ subsets: ["latin"], weight: "700" });
 
 const SidebarContainer = styled.aside`
-grid-column: 1/2;
-grid-row: 1/3;
-/* margin: 30px 30px; */
-display: flex;
-flex-direction: column;
-align-items: left;
-/* border-radius: 20px; */
-background: #f5f6f9;
-padding: 20px;
+  grid-column: 1/2;
+  grid-row: 1/3;
+  /* margin: 30px 30px; */
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  /* border-radius: 20px; */
+  background: #f5f6f9;
+  padding: 20px;
 `;
 const ProfilePicture = styled.img`
   width: 175px;
@@ -77,29 +77,17 @@ const MenuItem = styled.li`
   cursor: pointer;
   color: #b3b3b3;
   list-style: none;
+  border-radius: 20px;
   background-color: ${(props) => (props.isActive ? "#71B1CD" : "none")};
   ${(props) =>
     props.isActive &&
     css`
-      color: white;
-      border-radius: 20px;
-      background: var(
-        --backgroundGradient2,
-        linear-gradient(180deg, #142e54 0%, #2c66ba 100%)
-      );
-      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-        0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-        0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+      color: #389afe;
+      background: #ddebfa;
     `}
   &:hover {
-    color: white;
-    border-radius: 20px;
-    background: var(
-      --backgroundGradient2,
-      linear-gradient(180deg, #142e54 0%, #2c66ba 100%)
-    );
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-      0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    color: #389afe;
+    background: #ddebfa;
   }
 `;
 const Icon = styled.img`
@@ -223,11 +211,11 @@ const SharedMenuItem = ({ isActive, setActiveTab }) => {
   );
 };
 
-const Sidebar = ({ activeTab, setActiveTab }) => (
+const Sidebar = ({ activeTab, setActiveTab, profilePic, userName }) => (
   <SidebarContainer>
-    <ProfilePicture src="jalen.jpeg" alt="Profile Picture" />
+    <ProfilePicture src={profilePic} alt="Profile Picture" />
     <WelcomeText>WELCOME BACK</WelcomeText>
-    <Username>Leesto</Username>
+    <Username>{userName}</Username>
     <Menu>
       <ul>
         <NotificationMenuItem

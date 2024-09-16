@@ -10,15 +10,20 @@ import { PageContainer, InfoContainer } from '@/components/styled-components';
 import Login from './Login'
 
 
+const Container = s.div`
+display: flex;
+align-items: center;
+justify: content;
+`
 
 export default function Home() {
 
     return(
       <PageContainer>
       <NavBar/>
-      <InfoContainer>
+      <Container>
         <Login/>
-      </InfoContainer>
+      </Container>
     </PageContainer>
     )
 }

@@ -36,14 +36,14 @@ export const PageContainer = s.div`
         min-height: 100vh; /* Ensure container expands if content exceeds viewport height */
         overflow: auto;
     }
+
 `;
 export const InfoContainer = s.div`
     border-radius: 20px;
-    border: 1px solid #FFF;
     width: 100%;
-    height: 87vh;
-    margin-top: 3vh;
-    margin-bottom: 3vh;
+    height: 93vh;
+    margin-top: 2vh;
+
     margin-left: 1vw;
     margin-right: 1vw;
     padding: 1vh 1vw;

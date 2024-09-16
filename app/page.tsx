@@ -45,7 +45,6 @@ const PageContainerEdited = s.div`
     height: 100%; /* Take up the entire height of the viewport */
     min-width: 100vw; /* Ensure container expands if content exceeds viewport width */
     min-height: 93vh; /* Ensure container expands if content exceeds viewport height */
-    margin-top: 7vh;    
     @media (max-width: 1000px) {
         margin-top: 0vh;
         width: 100vw; /* Take up the entire width of the viewport */
@@ -59,58 +58,82 @@ const PageContainerEdited = s.div`
 const videoStyles = {
   width: "100vw",
   maxWidth: "100%",
-  height: "100%",
+  minheight: "100vh",
+  marginTop: "7vh",
 };
+
+const VideoContainer = s.div`
+
+`;
+
+const Container = s.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column nowrap;
+    background: var(--backgroundGradient2);
+`;
+
+
+
+
+
 
 export default function Home() {
   return (
-    <PageContainerEdited>
+    <Container>
       <NavBar />
-      <VideoPlayer
-        src="/videos/v2export.mp4"
-        type="video/mp4"
-        style={videoStyles}
-      />
-      <InfoContainer>
-        <Title>
-          <TitleContainer>
-            <span style={{ fontFamily: Medium.style.fontFamily }}>CLI</span>
-            <span style={{ fontFamily: Regular.style.fontFamily }}>FF</span>
-            <span style={{ fontFamily: Light.style.fontFamily }}>SI</span>
-            <span style={{ fontFamily: ExtraLight.style.fontFamily }}>DE</span>
-          </TitleContainer>
-          <TitleContainerSecond>
-            <span style={{ fontFamily: Bold.style.fontFamily }}>ENTER</span>
-            <span style={{ fontFamily: Regular.style.fontFamily }}>TAI</span>
-            <span style={{ fontFamily: Light.style.fontFamily }}>NME</span>
-            <span style={{ fontFamily: ExtraLight.style.fontFamily }}>NT</span>
-          </TitleContainerSecond>
-        </Title>
-        <LeftColumn>
-          <Logo src={logo} alt="logo" />
-        </LeftColumn>
-        <RightColumn>
-          <SloganContainer>
-            {" "}
-            (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-                flexFlow: "column nowrap",
-                marginBottom: "45px",
-              }}
-            >
-              <Slogan>RISE TO NEW HEIGHTS.</Slogan>
-              <Slogan>ELEVATE YOUR SOUND.</Slogan>
-              <Slogan>TAKE THE LEAP.</Slogan>
-            </div>
-            )
-          </SloganContainer>
-          <Button href="/contact">JOIN OUR ROSTER</Button>
-        </RightColumn>
-      </InfoContainer>
-    </PageContainerEdited>
+        <VideoPlayer
+          src="/videos/v2export.mp4"
+          type="video/mp4"
+          style={videoStyles}
+        />
+      <PageContainerEdited>
+        <InfoContainer>
+          <Title>
+            <TitleContainer>
+              <span style={{ fontFamily: Medium.style.fontFamily }}>CLI</span>
+              <span style={{ fontFamily: Regular.style.fontFamily }}>FF</span>
+              <span style={{ fontFamily: Light.style.fontFamily }}>SI</span>
+              <span style={{ fontFamily: ExtraLight.style.fontFamily }}>
+                DE
+              </span>
+            </TitleContainer>
+            <TitleContainerSecond>
+              <span style={{ fontFamily: Bold.style.fontFamily }}>ENTER</span>
+              <span style={{ fontFamily: Regular.style.fontFamily }}>TAI</span>
+              <span style={{ fontFamily: Light.style.fontFamily }}>NME</span>
+              <span style={{ fontFamily: ExtraLight.style.fontFamily }}>
+                NT
+              </span>
+            </TitleContainerSecond>
+          </Title>
+          <LeftColumn>
+            <Logo src={logo} alt="logo" />
+          </LeftColumn>
+          <RightColumn>
+            <SloganContainer>
+              {" "}
+              (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  flexFlow: "column nowrap",
+                  marginBottom: "45px",
+                }}
+              >
+                <Slogan>RISE TO NEW HEIGHTS.</Slogan>
+                <Slogan>ELEVATE YOUR SOUND.</Slogan>
+                <Slogan>TAKE THE LEAP.</Slogan>
+              </div>
+              )
+            </SloganContainer>
+            <Button href="/contact">JOIN OUR ROSTER</Button>
+          </RightColumn>
+        </InfoContainer>
+      </PageContainerEdited>
+    </Container>
   );
 }

@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback } from "react";
+import React, { forwardRef, useCallback, useState } from "react";
 import styled from "styled-components";
 import { useDropzone } from "react-dropzone";
 
@@ -9,7 +9,8 @@ const RightSidebarContainer = styled.div`
 
 const DropzoneContainer = styled.div<{ fileSelectionOccured: boolean }>`
   border: ${({ fileSelectionOccured }) =>
-    fileSelectionOccured ? "none" : "2px dashed #389afe"};
+    fileSelectionOccured ? "none" : "2px dashed #2B61B1"};
+  border-radius: 20px;
   text-align: center;
   cursor: pointer;
   height: 100%;
@@ -80,23 +81,56 @@ const MoreOptionsButton = styled.button`
 
 const SuccessMessage = styled.p`
   color: green;
-  margin-top: 10px;
+  align-self: flex-end;
 `;
 
 const ErrorMessage = styled.p`
   color: red;
-  margin-top: 10px;
+  align-self: flex-end;
 `;
 
 interface RightSidebarProps {
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUpload: (file: File, index: number) => void;
+  handleUpload: (file: File) => void;
   handleUploadAll: () => void;
   progresses: number[];
   successMessage: string;
-  errorMessage: string;
   selectedFiles: File[];
 }
+
+const fileValidator = (file: File) => {
+  const maxFiles = 5;
+  const allowedTypes = ["audio/mpeg", "audio/wav"];
+  const maxSize = 60 * 1024 * 1024; // 60MB
+  const maxFileNameLength = 20;
+
+  // Validate file type
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      code: "invalid-file-type",
+      message: `Invalid file type: ${file.name}. Only .mp3 and .wav files are allowed.`,
+    };
+  }
+
+  // Validate file size
+  if (file.size > maxSize) {
+    return {
+      code: "file-too-large",
+      message: `File size exceeds 60MB: ${file.name}.`,
+    };
+  }
+
+  // Validate file name length
+  if (file.name.length > maxFileNameLength) {
+    return {
+      code: "file-name-too-long",
+      message: `File name exceeds ${maxFileNameLength} characters: ${file.name}.`,
+    };
+  }
+
+  // If all validations pass, return null (no errors)
+  return null;
+};
 
 const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
   function RightSidebar(props, ref) {
@@ -106,12 +140,19 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
       handleUploadAll,
       progresses,
       successMessage,
-      errorMessage,
       selectedFiles,
     } = props;
-
+    const [errorMessage, setErrorMessage] = useState("");
+    
     const onDrop = useCallback(
-      (acceptedFiles: File[]) => {
+      (acceptedFiles: File[], fileRejections: any[]) => {
+        if (fileRejections.length > 0) {
+          const rejection = fileRejections[0].errors[0];
+          setErrorMessage(rejection.message);
+          setTimeout(() => setErrorMessage(""), 3000);
+          return;
+        }
+
         const dataTransfer = new DataTransfer();
 
         acceptedFiles.forEach((file) => {
@@ -142,6 +183,7 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
         "audio/wav": [".wav"],
       },
       maxSize: 60 * 1024 * 1024, // 60MB
+      validator: fileValidator
     });
 
     const fileSelectionOccured = selectedFiles.length !== 0;
@@ -161,21 +203,21 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
           )}
 
           {selectedFiles.length > 1 && (
-            <button onClick={handleUploadAll}>Upload All</button>
+            <button onClick={(e) => {e.stopPropagation(); handleUploadAll();}}>Upload All</button>
           )}
 
           {selectedFiles.map((file: any, index: any) => (
-            <FileItem key={index}>
+            <FileItem key={file.id}>
               <FileIcon src="/icons/file-icon.png" alt="file icon" />
               <FileDetails>
                 <FileName>{file.name}</FileName>
                 <FileSize>
-                  {Math.round(progresses[index])}% |{" "}
+                  {Math.round(progresses[file.id])}% |{" "}
                   {(file.size / (1024 * 1024)).toFixed(2)} MB
                 </FileSize>
-                <ProgressBar progress={progresses[index]} />
+                <ProgressBar progress={progresses[file.id] || 0} />
               </FileDetails>
-              <MoreOptionsButton onClick={() => handleUpload(file, index)}>
+              <MoreOptionsButton onClick={(e) => { e.stopPropagation(); handleUpload(file)} }>
                 Upload
               </MoreOptionsButton>
             </FileItem>
@@ -186,6 +228,10 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
         </DropzoneContainer>
       </RightSidebarContainer>
     );
+
+
+
+    
   }
 );
 

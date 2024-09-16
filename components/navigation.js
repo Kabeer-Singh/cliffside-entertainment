@@ -1,12 +1,12 @@
 import React, { useCallback, useState, useEffect } from "react";
 import s from "styled-components";
 import { useRouter } from "next/navigation";
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './firebase';
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "./firebase";
 import { Oswald } from "next/font/google";
-const daFont = Oswald({ subsets: ['latin'], weight: '300' });
-import Image from 'next/image';
-import logoImage from '../public/logos/logoNoText.png';
+const daFont = Oswald({ subsets: ["latin"], weight: "300" });
+import Image from "next/image";
+import logoImage from "../public/logos/logoNoText.png";
 
 // Styled components
 const NavigationContainer = s.div`
@@ -20,7 +20,7 @@ const NavigationContainer = s.div`
   background-color: white;
   z-index: 1000;
   padding: 0 24px;
-  margin-bottom: 3vh;
+  
 `;
 
 const NavBarItems = s.div`
@@ -41,6 +41,7 @@ const NavBarCenter = s.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
   flex: 1;
 `;
 
@@ -53,7 +54,7 @@ const NavBarRight = s.div`
 
 const TabHeader = s.div`
   font-family: ${daFont.style.fontFamily};
-  background: var(--backgroundGradient, linear-gradient(180deg, #3E517C 30%, #4A527A 60%, #142E54 100%));
+  background: #2B61B1;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -76,14 +77,14 @@ const TabHeader = s.div`
   }
 
   &::after {
-    width: ${({ isActive }) => (isActive ? '100%' : '0')};
+    width: ${({ isActive }) => (isActive ? "100%" : "0")};
     content: '';
     position: absolute;
     left: 0;
     bottom: -2px;
     width: 0;
     height: 2px;
-    background: linear-gradient(180deg, #3E517C 30%, #4A527A 60%, #142E54 100%);
+    background: #2B61B1;
     transition: width 0.3s;
   }
 
@@ -96,73 +97,91 @@ const LoginButton = s.button`
   font-family: ${daFont.style.fontFamily};
   font-size: 20px;
   font-weight: 300;
-  letter-spacing: 5.04px;
   padding: 5px 22px;
   margin-left: 10px;
-  color: white;
-  background: var(--backgroundGradient2);
-  border: none;
-  border-radius: 8px;
+  color: #2B61B1;
+  background: none;
+  border: 2px solid #2B61B1;
   cursor: pointer;
   box-shadow: none;
   text-align: center;
-  margin-right: 24px;
+  margin-right: 24px !important;
+  transition: 0.3s;
+  transition-timing-function: ease-in-out;
+  
+  &:hover {
+    background: #2B61B1;
+    border: 2px solid white;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 16px; /* Reduce font size for smaller screens */
+    padding: 5px 15px; /* Adjust padding */
+    margin-right: 24px !important;
+    white-space: nowrap; /* Ensure the text stays on a single line */
+  }
 `;
 
-const DrawerToggle = s.button`
-  font-size: 30px;
-  color: white;
-  background: none;
+
+const DrawerToggle = s.div`
+  font-size: 50px;
+  color: black;
+  background: white;
   border: none;
-  cursor: pointer;
   position: fixed;
-  top: 10px;
-  left: 5px;
+  top: 0px;
+  left: 0px;
   z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-
-  &:before {
-    content: ${({ isOpen }) => (isOpen ? '"\\2715"' : '"\\2630"')}; /* "X" or three lines */
-    font-size: 30px;
-  }
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 100%;
+  height: 70px;
 `;
 
 const Drawer = s.div`
   position: fixed;
-
-
-  display:  ${({ isOpen }) => (isOpen ? 'block' : 'none')};
-  transition: opacity 2s ease-out;
-  opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
-
-
   top: 0;
-  left: ${({ isOpen }) => (isOpen ? '0' : '-100%')};
+  right: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(51, 51, 51); /* Semi-transparent background */
-  transition: left 2s ease;
-  z-index: 999;
-  padding: 60px 20px;
-  backdrop-filter: blur(15px); /* Stronger blur for better background effect */
+  background: var(--backgroundGradient2);
+  transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(100%)")};
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
 
-  nav ul {
+  @media (min-width: 768px) {
+    width: 300px; /* Adjust as per your design */
+    height: 100%; 
+  }
+  nav {
+    margin-top: 10vh;
+    margin-left: 5vw;
+  }
+    nav ul {
     list-style-type: none;
     padding: 0;
+    text-transform: uppercase;
+    
   }
 
   nav ul li {
-    padding: 15px 0;
+    margin-bottom: 1vh;
+    padding-bottom: 0px;
   }
 
   nav ul li a {
+    font-family: ${daFont.style.fontFamily};
+    cursor: pointer;
     color: white;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 45px;
+    &:hover {
+      color: gray;
+    }
   }
 `;
 
@@ -173,7 +192,7 @@ const Logo = React.memo(() => (
     src={logoImage}
     width={45}
     height="auto"
-    style={{ marginRight: '37px', cursor: 'pointer' }}
+    style={{ marginRight: "0px", cursor: "pointer" }}
   />
 ));
 
@@ -182,10 +201,14 @@ const NavBar = React.memo(() => {
   const [user] = useAuthState(auth);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const threeLines = drawerOpen ? "\u2715" : "\u2630";
 
-  const handleClick = useCallback((route) => {
-    router.push(route);
-  }, [router]);
+  const handleClick = useCallback(
+    (route) => {
+      router.push(route);
+    },
+    [router]
+  );
 
   const handleLogout = useCallback(() => {
     auth.signOut();
@@ -206,27 +229,97 @@ const NavBar = React.memo(() => {
 
   useEffect(() => {
     handleResize(); // Set initial state
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [handleResize]);
 
   if (isMobile) {
     return (
       <>
-        <DrawerToggle isOpen={drawerOpen} onClick={toggleDrawer} />
+        <DrawerToggle isOpen={drawerOpen}>
+          <span 
+            style={{ cursor: "pointer", flexBasis: "0", color: '#2B61B1' }}
+            onClick={toggleDrawer}
+          >
+            {threeLines}
+          </span>
+          <NavBarCenter onClick={() => handleClick("/")}>
+            <Logo />
+          </NavBarCenter>
+          <LoginButton
+            style={{ flexBasis: "0" }}
+            onClick={() => handleClick("login")}
+          >
+            LOG IN
+          </LoginButton>
+        </DrawerToggle>
         <Drawer isOpen={drawerOpen}>
           <nav>
             <ul>
-              <li><a onClick={() => { toggleDrawer(); handleClick('/'); }}>Home</a></li>
-              <li><a onClick={() => { toggleDrawer(); handleClick('about'); }}>About</a></li>
-              <li><a onClick={() => { toggleDrawer(); handleClick('contact'); }}>Contact</a></li>
+              <li>
+                <a
+                  onClick={() => {
+                    toggleDrawer();
+                    handleClick("/");
+                  }}
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  onClick={() => {
+                    toggleDrawer();
+                    handleClick("about");
+                  }}
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  onClick={() => {
+                    toggleDrawer();
+                    handleClick("contact");
+                  }}
+                >
+                  Contact
+                </a>
+              </li>
               {user ? (
                 <>
-                  <li><a onClick={() => { toggleDrawer(); handleClick('dashboard'); }}>Dashboard</a></li>
-                  <li><a onClick={() => { toggleDrawer(); handleLogout(); }}>Logout</a></li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        toggleDrawer();
+                        handleClick("dashboard");
+                      }}
+                    >
+                      Dashboard
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        toggleDrawer();
+                        handleLogout();
+                      }}
+                    >
+                      Log out
+                    </a>
+                  </li>
                 </>
               ) : (
-                <li><a onClick={() => { toggleDrawer(); handleClick('login'); }}>Login</a></li>
+                <li>
+                  <a
+                    onClick={() => {
+                      toggleDrawer();
+                      handleClick("login");
+                    }}
+                  >
+                    LOG IN
+                  </a>
+                </li>
               )}
             </ul>
           </nav>
@@ -238,23 +331,28 @@ const NavBar = React.memo(() => {
   return (
     <NavigationContainer>
       <NavBarLeft>
-        <TabHeader onClick={() => handleClick('/')}>HOME</TabHeader>
-        <TabHeader onClick={() => handleClick('about')}>ABOUT</TabHeader>
-        <TabHeader onClick={() => handleClick('contact')}>CONTACT</TabHeader>
+        <TabHeader onClick={() => handleClick("/")}>HOME</TabHeader>
+        <TabHeader onClick={() => handleClick("about")}>ABOUT</TabHeader>
+        <TabHeader onClick={() => handleClick("contact")}>CONTACT</TabHeader>
       </NavBarLeft>
 
-      <NavBarCenter onClick={() => handleClick('/')}>
+      <NavBarCenter
+        onClick={() => handleClick("/")}
+        style={{ marginRight: "35px" }}
+      >
         <Logo />
       </NavBarCenter>
 
       <NavBarRight>
         {user ? (
           <>
-            <LoginButton onClick={() => handleClick('dashboard')}>dashboard</LoginButton>
-            <LoginButton onClick={handleLogout}>logout</LoginButton>
+            <LoginButton onClick={() => handleClick("dashboard")}>
+              dashboard
+            </LoginButton>
+            <LoginButton onClick={handleLogout}>log out</LoginButton>
           </>
         ) : (
-          <LoginButton onClick={() => handleClick('login')}>LOGIN</LoginButton>
+          <LoginButton onClick={() => handleClick("login")}>LOG IN</LoginButton>
         )}
       </NavBarRight>
     </NavigationContainer>

@@ -1,12 +1,12 @@
 "use client";
-import Image from 'next/image';
-import s from 'styled-components';
-import NavBar from '../../components/navigation';
-import React, { useRef, useEffect, useState } from 'react';
-import { Yaldevi } from 'next/font/google';
-import { Form } from '../../components/form';
+import Image from "next/image";
+import s from "styled-components";
+import NavBar from "../../components/navigation";
+import React, { useRef, useEffect, useState } from "react";
+import { Yaldevi } from "next/font/google";
+import { Form } from "../../components/form";
 
-const TitleFont = Yaldevi({ subsets: ['latin'], weight: '600' });
+const TitleFont = Yaldevi({ subsets: ["latin"], weight: "600" });
 
 // Define props interface with isActive prop
 interface FormTitleProps {
@@ -23,6 +23,9 @@ const PageContainer = s.div`
   height: 100vh;
   overflow: hidden;
   margin-top: 50px;
+  @media (max-width: 1000px) {
+    margin-top: 0px;
+  }
 `;
 
 const InfoContainer = s.div`
@@ -33,11 +36,15 @@ const InfoContainer = s.div`
   overflow: auto;
   @media (min-width: 1000px) {
     flex-direction: row;
+    
   }
+    @media (max-width: 768px) {
+    margin-top: 70px;
+    }
 `;
 
 const Column1 = s.div<{ isVisible: boolean }>`
-  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
   width: 100%;
   min-height: 100%;
   background: #00063F;
@@ -59,7 +66,7 @@ const Column1 = s.div<{ isVisible: boolean }>`
 `;
 
 const Column2 = s.div<{ isVisible: boolean }>`
-  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
   width: 100%;
   min-height: 100%;
   background: #71B1CD;
@@ -86,7 +93,7 @@ const ToggleButton = s.button`
 `;
 
 const FormTitle = s.div<FormTitleProps>`
-  font-family: ${TitleFont};
+  font-family: ${TitleFont.style.fontFamily};
   font-size: 3em;
   font-style: normal;
   font-weight: 600;
@@ -119,7 +126,8 @@ const FormTitle = s.div<FormTitleProps>`
 
   @media (max-width: 1000px) {
     font-size: 24px;
-    border-bottom: 2px solid ${(props) => (props.isActive ? "#FFF" : "#B3B3B3")};
+    border-bottom: 2px solid ${(props) =>
+      props.isActive ? "#FFF" : "#B3B3B3"};
     font-style: normal;
     font-weight: 600;
     &:hover {
@@ -134,7 +142,7 @@ const FormTitle = s.div<FormTitleProps>`
 
 const HiddenTitleContainer = s.div`
   color: #FFF;
-  font-family: ${TitleFont};
+  font-family: ${TitleFont.style.fontFamily};
   font-size: 64px;
   padding-bottom: 25px;
   font-style: normal;
@@ -150,7 +158,7 @@ const HiddenTitleContainer = s.div`
     font-size: 32px;
     letter-spacing: 10.36px;
   }
-`
+`;
 
 const StyledButton = s.button`
 @media (min-width: 1000px) {
@@ -178,7 +186,7 @@ const StyledButton = s.button`
 `;
 
 export default function Home() {
-  const [selectedForm, setSelectedForm] = useState('GENERAL REQUEST');
+  const [selectedForm, setSelectedForm] = useState("GENERAL REQUEST");
   const [isColumnOneVisible, setIsColumnOneVisible] = useState(true);
 
   const handleSelectionChange = (option: string) => {
@@ -193,26 +201,26 @@ export default function Home() {
         <Column1 isVisible={isColumnOneVisible}>
           <HiddenTitleContainer>(CONTACT US)</HiddenTitleContainer>
           <FormTitle
-            isActive={selectedForm === 'GENERAL REQUEST'}
-            onClick={() => handleSelectionChange('GENERAL REQUEST')}
+            isActive={selectedForm === "GENERAL REQUEST"}
+            onClick={() => handleSelectionChange("GENERAL REQUEST")}
           >
             GENERAL REQUEST
           </FormTitle>
           <FormTitle
-            isActive={selectedForm === 'SUBMIT MUSIC'}
-            onClick={() => handleSelectionChange('SUBMIT MUSIC')}
+            isActive={selectedForm === "SUBMIT MUSIC"}
+            onClick={() => handleSelectionChange("SUBMIT MUSIC")}
           >
             SUBMIT MUSIC
           </FormTitle>
           <FormTitle
-            isActive={selectedForm === 'SYNCH LICENSE REQUEST'}
-            onClick={() => handleSelectionChange('SYNCH LICENSE REQUEST')}
+            isActive={selectedForm === "SYNCH LICENSE REQUEST"}
+            onClick={() => handleSelectionChange("SYNCH LICENSE REQUEST")}
           >
             SYNCH LICENSE REQUEST
           </FormTitle>
           <FormTitle
-            isActive={selectedForm === 'PRESS CONTACT'}
-            onClick={() => handleSelectionChange('PRESS CONTACT')}
+            isActive={selectedForm === "PRESS CONTACT"}
+            onClick={() => handleSelectionChange("PRESS CONTACT")}
           >
             PRESS CONTACT
           </FormTitle>
@@ -221,19 +229,19 @@ export default function Home() {
           <StyledButton onClick={() => setIsColumnOneVisible(true)}>
             Back to Selection
           </StyledButton>
-          {selectedForm === 'GENERAL REQUEST' && (
+          {selectedForm === "GENERAL REQUEST" && (
             <Form inputTitle="LET US KNOW ABOUT ANY GENERAL INQUIRIES." />
           )}
-          {selectedForm === 'SUBMIT MUSIC' && (
+          {selectedForm === "SUBMIT MUSIC" && (
             <Form
               submitMusic={true}
               inputTitle="WE RECEIVE A LOT OF SUBMISSIONS. PLEASE ALLOW UP TO 1 WEEK FOR A RESPONSE. THANKS!"
             />
           )}
-          {selectedForm === 'SYNCH LICENSE REQUEST' && (
+          {selectedForm === "SYNCH LICENSE REQUEST" && (
             <Form inputTitle="PLEASE INCLUDE AS MUCH INFORMATION AS POSSIBLE ABOUT THE REQUEST AND WE WILL REPLY AS QUICKLY AS POSSIBLE." />
           )}
-          {selectedForm === 'PRESS CONTACT' && (
+          {selectedForm === "PRESS CONTACT" && (
             <Form inputTitle="PLEASE INCLUDE AS MUCH DETAIL AS POSSIBLE IN YOUR REQUESTS." />
           )}
         </Column2>
