@@ -132,7 +132,7 @@ const fileValidator = (file: File) => {
   return null;
 };
 
-const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
+const FileUploader = forwardRef<HTMLDivElement, RightSidebarProps>(
   function RightSidebar(props, ref) {
     const {
       handleFileChange,
@@ -197,8 +197,8 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
           <input {...getInputProps()} />
           {!fileSelectionOccured && (
             <>
-              <div>Click to Upload or Drag'N'Drop</div>
-              <div>Files must be .mp3 .wav - 60MB max</div>
+              <div style={{marginBlock: '4px'}}>Click to Upload or Drag'N'Drop</div>
+              <div>Files must be .mp3 .wav - Max 60Mb</div>
             </>
           )}
 
@@ -235,4 +235,4 @@ const RightSidebar = forwardRef<HTMLDivElement, RightSidebarProps>(
   }
 );
 
-export default RightSidebar;
+export default FileUploader;

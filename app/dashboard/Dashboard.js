@@ -16,7 +16,7 @@ const daFont = Orbitron({ subsets: ["latin"], weight: "700" });
 import Sidebar from "./components/Sidebar";
 import ListItem from "./components/ListItem";
 import FileListHeader from "./components/FileListHeader";
-import RightSidebar from "./components/RightSidebar";
+import FileUploader from "./components/FileUploader";
 
 // Define styled components
 const PageContainerDashboard = styled(PageContainer)`
@@ -387,7 +387,7 @@ const Dashboard = () => {
         />
         {activeTab === "File Management" && (
           <Header>
-            <RightSidebar
+            <FileUploader
               selectedFiles={selectedFiles}
               handleFileChange={handleFileChange}
               handleUpload={handleUpload}
