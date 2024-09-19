@@ -17,6 +17,7 @@ import Sidebar from "./components/Sidebar";
 import ListItem from "./components/ListItem";
 import FileListHeader from "./components/FileListHeader";
 import FileUploader from "./components/FileUploader";
+import UserWheel from "./components/UserWheel";
 
 // Define styled components
 const PageContainerDashboard = styled(PageContainer)`
@@ -84,7 +85,7 @@ const ListContainer = styled.div`
   height: 100%;
   overflow: hidden; /* Prevent the entire container from scrolling */
 `;
-const MockUp = styled.div`
+const RightSidebar = styled.div`
   grid-column: 3/4;
   grid-row: 1/3;
   margin-top: 30px;
@@ -92,7 +93,7 @@ const MockUp = styled.div`
   margin-bottom: 30px;
   border-radius: 20px;
   padding: 20px;
-  background: red;
+  background: #f5f6f9;
 `;
 
 const Dashboard = () => {
@@ -118,6 +119,7 @@ const Dashboard = () => {
     profilePicUrl: "",
     email: "",
     name: "",
+    credits: 0,
   });
   const [profilePic, setProfilePic] = useState("");
 
@@ -259,17 +261,17 @@ const Dashboard = () => {
   };
 
   const saveNewFileName = async (newFileName) => {
-    console.log('entering saveNEWFileName');
-    console.log(editingFile)
+    console.log("entering saveNEWFileName");
+    console.log(editingFile);
     console.log(newFileName);
     await firestore.collection("files").doc(editingFile.id).update({
       fileName: newFileName,
       uploadedAt: new Date(),
     });
     setEditingFile(null);
-    setNewFileName('');
+    setNewFileName("");
     fetchFiles();
-    console.log('exiting saveNewFileName');
+    console.log("exiting saveNewFileName");
   };
 
   const getDocumentById = async (collectionName, documentId) => {
@@ -306,6 +308,7 @@ const Dashboard = () => {
             profilePicUrl: data?.profilePicUrl || "",
             email: data?.email || "",
             name: data?.name || "",
+            credits: data?.credits || 0,
           });
 
           // Fetch the profile picture from Firebase Storage
@@ -411,7 +414,7 @@ const Dashboard = () => {
                   overflow: "scroll",
                   borderBottom: "2px inset #ebedef",
                   borderRadius: "20px",
-                  width: '99%',
+                  width: "99%",
                 }}
               >
                 {getFilteredFiles().map((file) => (
@@ -421,14 +424,16 @@ const Dashboard = () => {
                     editingFile={editingFile}
                     startEditing={startEditing}
                     saveNewFileName={saveNewFileName}
-                    deleteFile = {deleteFile}
+                    deleteFile={deleteFile}
                   />
                 ))}
               </div>
             </ListContainer>
           )}
         </MainContent>
-        <MockUp>HELLO</MockUp>
+        <RightSidebar>
+          <UserWheel fileCredits={userData.credits} userUploads={uploadedFiles.length}/>
+        </RightSidebar>
       </Container>
     </PageContainer>
   );
