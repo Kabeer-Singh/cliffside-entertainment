@@ -82,11 +82,11 @@ const MenuItem = styled.li`
   ${(props) =>
     props.isActive &&
     css`
-      color: #389afe;
+      color: #2B61B1;;
       background: #ddebfa;
     `}
   &:hover {
-    color: #389afe;
+    color: #2B61B1;;
     background: #ddebfa;
   }
 `;

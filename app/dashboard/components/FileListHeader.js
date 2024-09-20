@@ -34,7 +34,7 @@ const TabContainer = styled.div`
 const Tab = styled.div`
   font-size: 12px;
   margin-right: 30px;
-  color: ${(props) => (props.active ? "#389afe" : "#999;")};
+  color: ${(props) => (props.active ? "#2B61B1" : "#999;")};
   background: ${(props) => (props.active ? "#ddebfa" : "white")};
   align-text: center;
   padding: 15px;

@@ -18,6 +18,8 @@ import ListItem from "./components/ListItem";
 import FileListHeader from "./components/FileListHeader";
 import FileUploader from "./components/FileUploader";
 import UserWheel from "./components/UserWheel";
+import { populateUserMap, getUserMap } from './components/userMapService'; // Import the service
+
 
 // Define styled components
 const PageContainerDashboard = styled(PageContainer)`
@@ -148,6 +150,8 @@ const Dashboard = () => {
 
   const setFileInDatabase = async (file, downloadURL) => {
     const user = auth.currentUser;
+    const date = new Date().toLocaleDateString();
+    const sizeInMb = (file.size/ (1024*1024)).toFixed(2);
 
     if (user && file) {
       try {
@@ -156,6 +160,8 @@ const Dashboard = () => {
           userId: user.uid,
           fileName: file.name,
           fileUrl: downloadURL,
+          uploadDateAndTime: date,
+          fileSize: sizeInMb,
           sharedWith: [],
         });
 
@@ -274,58 +280,51 @@ const Dashboard = () => {
     console.log("exiting saveNewFileName");
   };
 
-  const getDocumentById = async (collectionName, documentId) => {
-    try {
-      const docRef = firestore.collection(collectionName).doc(documentId);
-      const doc = await docRef.get();
-
-      if (doc.exists) {
-        console.log("Document data:", doc.data());
-        return doc.data();
-      } else {
-        console.log("No such document!");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error getting document:", error);
-      return null;
-    }
-  };
-
   useEffect(() => {
-    fetchFiles();
-    const fetchUserData = async () => {
-      try {
-        // Fetch the user data from Firestore
-        const userDoc = await firestore
-          .collection("users")
-          .doc(auth.currentUser.uid)
-          .get(); // replace 'userId' with the actual ID
+    // Fetch Files and User Map on component mount
+    const fetchFilesAndUserMap = async () => {
+      fetchFiles();
 
-        if (userDoc.exists) {
-          const data = userDoc.data();
-          setUserData({
-            profilePicUrl: data?.profilePicUrl || "",
-            email: data?.email || "",
-            name: data?.name || "",
-            credits: data?.credits || 0,
-          });
+      // Populate the userMap if not already populated
+      const userMap = await populateUserMap();
+      console.log('User map inside component:', userMap);
 
-          // Fetch the profile picture from Firebase Storage
-          if (data?.profilePicUrl) {
-            const storage = getStorage();
-            const imageRef = ref(storage, data.profilePicUrl);
-            const url = await getDownloadURL(imageRef);
-            setProfilePic(url);
+      // Fetch the current user's data
+      const fetchUserData = async () => {
+        try {
+          const userDoc = await firestore
+            .collection("users")
+            .doc(auth.currentUser.uid)
+            .get();
+
+          if (userDoc.exists) {
+            const data = userDoc.data();
+            setUserData({
+              profilePicUrl: data?.profilePicUrl || "",
+              email: data?.email || "",
+              name: data?.name || "",
+              credits: data?.credits || 0,
+            });
+
+            // Fetch profile picture
+            if (data?.profilePicUrl) {
+              const storage = getStorage();
+              const imageRef = ref(storage, data.profilePicUrl);
+              const url = await getDownloadURL(imageRef);
+              setProfilePic(url);
+            }
           }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+      };
+
+      await fetchUserData();
     };
 
-    fetchUserData();
+    fetchFilesAndUserMap();
   }, []);
+
 
   const handleSort = (attribute) => {
     setSortAttribute(attribute);
@@ -368,11 +367,6 @@ const Dashboard = () => {
     }
     return files;
   };
-
-  useEffect(() => {
-    console.log(auth.currentUser.uid);
-    getDocumentById("users", auth.currentUser.uid);
-  }, []);
 
   useEffect(() => {
     setAllFiles([...uploadedFiles, ...sharedFiles]);

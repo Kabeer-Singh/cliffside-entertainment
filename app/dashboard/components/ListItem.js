@@ -11,6 +11,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import { getUserMap } from "./userMapService";
 
 const ListItemContainer = styled.div`
   // Your styles here
@@ -143,6 +144,7 @@ const ListItem = ({
   deleteFile,
 }) => {
   const [newFileName, setNewFileName] = useState(file.fileName);
+  const userMap = getUserMap();
 
   const handleSave = () => {
     saveNewFileName(newFileName);
@@ -173,6 +175,7 @@ const ListItem = ({
       console.error("Error downloading file:", error);
     }
   };
+
 
   const ToolTip = (props) => (
     <Popup
@@ -232,12 +235,12 @@ const ListItem = ({
           </FileName>
         )}
       </ListItemContent>
-      <FileDetails>{(file.fileSize / (1024 * 1024)).toFixed(2)} MB</FileDetails>
+      <FileDetails>{file.fileSize} MB</FileDetails>
       <FileDetails>
         {new Date(file.uploadDateAndTime).toLocaleDateString()}
       </FileDetails>
       <UploadedBy>
-        <UploaderName>Uploader Name</UploaderName>
+        <UploaderName>{userMap[file.userId]}</UploaderName>
       </UploadedBy>
       <ToolTip file={file} />
     </ListItemContainer>
