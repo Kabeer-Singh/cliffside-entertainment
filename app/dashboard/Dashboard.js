@@ -18,8 +18,8 @@ import ListItem from "./components/ListItem";
 import FileListHeader from "./components/FileListHeader";
 import FileUploader from "./components/FileUploader";
 import UserWheel from "./components/UserWheel";
-import { populateUserMap, getUserMap } from './components/userMapService'; // Import the service
-
+import { populateUserMap, getUserMap } from "./components/userMapService"; // Import the service
+import ActivityLog from "./components/ActivityLog";
 
 // Define styled components
 const PageContainerDashboard = styled(PageContainer)`
@@ -55,20 +55,7 @@ const Header = styled.header`
   justify-content: center;
   border-radius: 20px;
   padding: 20px;
-`;
-const SearchBar = styled.input`
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1em;
-  color: #c0c0c0;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-    0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25),
-    0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  position: relative;
 `;
 const MainContent = styled.main`
   grid-column: 2/3;
@@ -94,8 +81,10 @@ const RightSidebar = styled.div`
   margin-right: 30px;
   margin-bottom: 30px;
   border-radius: 20px;
-  padding: 20px;
   background: #f5f6f9;
+  display: grid;
+  grid-template-rows: 30% 1fr; /* Match the row distribution as in Container */
+  
 `;
 
 const Dashboard = () => {
@@ -103,11 +92,9 @@ const Dashboard = () => {
   const [sharedFiles, setSharedFiles] = useState([]);
   const [allFiles, setAllFiles] = useState([]);
   const [fileTab, setFileTab] = useState("All");
-
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileSizes, setFileSizes] = useState([]);
   const [progresses, setProgresses] = useState([]);
-
   const [downloadURL, setDownloadURL] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const fileInputRef = useRef(null);
@@ -122,6 +109,7 @@ const Dashboard = () => {
     email: "",
     name: "",
     credits: 0,
+    activityLog: [],
   });
   const [profilePic, setProfilePic] = useState("");
 
@@ -145,13 +133,14 @@ const Dashboard = () => {
       //adding the successfully uploaded files to uploadedFiles & allFiles
       setUploadedFiles((prevFiles) => [...prevFiles, revisedFile]);
       setAllFiles((prevFiles) => [...prevFiles, revisedFile]);
+
     }, 3000);
   };
 
   const setFileInDatabase = async (file, downloadURL) => {
     const user = auth.currentUser;
     const date = new Date().toLocaleDateString();
-    const sizeInMb = (file.size/ (1024*1024)).toFixed(2);
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(2);
 
     if (user && file) {
       try {
@@ -169,8 +158,12 @@ const Dashboard = () => {
         const fileWithId = {
           ...file,
           id: docRef.id, // Firestore document ID
-          fileUrl: downloadURL, // File URL
-          fileName: file.name, // File name
+          userId: user.uid,
+          fileName: file.name,
+          fileUrl: downloadURL,
+          uploadDateAndTime: date,
+          fileSize: sizeInMb,
+          sharedWith: [],
         };
 
         // Pass the updated file object with ID to closeUpload
@@ -287,7 +280,7 @@ const Dashboard = () => {
 
       // Populate the userMap if not already populated
       const userMap = await populateUserMap();
-      console.log('User map inside component:', userMap);
+      console.log("User map inside component:", userMap);
 
       // Fetch the current user's data
       const fetchUserData = async () => {
@@ -304,6 +297,7 @@ const Dashboard = () => {
               email: data?.email || "",
               name: data?.name || "",
               credits: data?.credits || 0,
+              activityLog: data?.activityLog || [],
             });
 
             // Fetch profile picture
@@ -324,7 +318,6 @@ const Dashboard = () => {
 
     fetchFilesAndUserMap();
   }, []);
-
 
   const handleSort = (attribute) => {
     setSortAttribute(attribute);
@@ -372,6 +365,12 @@ const Dashboard = () => {
     setAllFiles([...uploadedFiles, ...sharedFiles]);
   }, [uploadedFiles, sharedFiles]);
 
+  const handleRemoveFile = (file) => {
+    setSelectedFiles((prevSelectedFiles) =>
+      prevSelectedFiles.filter((selectedFile) => selectedFile.id !== file.id)
+    );
+  };
+
   return (
     <PageContainer>
       <NavBar />
@@ -391,6 +390,9 @@ const Dashboard = () => {
               handleUploadAll={handleUploadAll}
               progresses={progresses}
               successMessage={successMessage}
+              fileCredits={userData.credits}
+              userUploads={uploadedFiles.length}
+              handleRemoveFile={handleRemoveFile}
             />
           </Header>
         )}
@@ -426,7 +428,11 @@ const Dashboard = () => {
           )}
         </MainContent>
         <RightSidebar>
-          <UserWheel fileCredits={userData.credits} userUploads={uploadedFiles.length}/>
+          <UserWheel
+            fileCredits={userData.credits}
+            userUploads={uploadedFiles.length}
+          />
+          <ActivityLog activityLog={userData.activityLog} />
         </RightSidebar>
       </Container>
     </PageContainer>

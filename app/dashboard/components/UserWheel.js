@@ -6,18 +6,22 @@ const CircleContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding-bottom: 15px;
-  border-bottom: 4px solid #ebedef;
+  height: auto;
+  border-bottom: 4px solid #e6e6e6;
+  border-radius: 20px;
+  margin-bottom: 10px;
 `;
 
 const Svg = styled.svg`
+  width: 60%; /* Take up 80% of the container's width */
+  height: auto; /* Maintain aspect ratio */
 `;
 
 const Text = styled.div`
   font-size: 16px;
   font-weight: bold;
-  margin-top: 10px;
-  text-align: center;
+  margin-top: -5px;
+  text-align: center;  
 `;
 
 const UserWheel = ({ fileCredits, userUploads }) => {
@@ -29,7 +33,7 @@ const UserWheel = ({ fileCredits, userUploads }) => {
 
   return (
     <CircleContainer>
-      <Svg width="120" height="120">
+      <Svg viewBox="0 0 120 120">
         <circle
           cx="60"
           cy="60"
@@ -64,7 +68,7 @@ const UserWheel = ({ fileCredits, userUploads }) => {
         </text>
       </Svg>
       <Text>
-        {userUploads}/{fileCredits} Upload Credits
+        Upload Credits Usage
       </Text>
     </CircleContainer>
   );

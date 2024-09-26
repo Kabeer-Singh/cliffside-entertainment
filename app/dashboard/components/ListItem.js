@@ -93,7 +93,7 @@ const ActionTab = styled.div`
   }
 `;
 
-const OverflowMenu = () => {
+export const OverflowMenu = () => {
   return (
     <div
       style={{
