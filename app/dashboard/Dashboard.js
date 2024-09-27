@@ -84,7 +84,6 @@ const RightSidebar = styled.div`
   background: #f5f6f9;
   display: grid;
   grid-template-rows: 30% 1fr; /* Match the row distribution as in Container */
-  
 `;
 
 const Dashboard = () => {
@@ -103,7 +102,7 @@ const Dashboard = () => {
   const [newFileName, setNewFileName] = useState("");
   const [sortAttribute, setSortAttribute] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [profilePic, setProfilePic] = useState("");
   const [userData, setUserData] = useState({
     profilePicUrl: "",
     email: "",
@@ -111,7 +110,6 @@ const Dashboard = () => {
     credits: 0,
     activityLog: [],
   });
-  const [profilePic, setProfilePic] = useState("");
 
   const closeUpload = (file, revisedFile) => {
     setSuccessMessage("File " + file.name + " uploaded successfully!");
@@ -129,12 +127,13 @@ const Dashboard = () => {
       setSelectedFiles((prevSelectedFiles) =>
         prevSelectedFiles.filter((selectedFile) => selectedFile.id !== file.id)
       );
+      // Add upload action to the activity log
+      addToUserActivityLog("upload", file.name);
 
       //adding the successfully uploaded files to uploadedFiles & allFiles
       setUploadedFiles((prevFiles) => [...prevFiles, revisedFile]);
       setAllFiles((prevFiles) => [...prevFiles, revisedFile]);
-
-    }, 3000);
+    }, 1500);
   };
 
   const setFileInDatabase = async (file, downloadURL) => {
@@ -251,8 +250,12 @@ const Dashboard = () => {
   };
 
   const deleteFile = async (fileId) => {
+    const fileToDelete = allFiles.find((file) => file.id === fileId);
     await firestore.collection("files").doc(fileId).delete();
     fetchFiles();
+
+    // Add delete action to the activity log
+    addToUserActivityLog("delete", fileToDelete.fileName);
   };
 
   const startEditing = (file) => {
@@ -260,17 +263,20 @@ const Dashboard = () => {
   };
 
   const saveNewFileName = async (newFileName) => {
-    console.log("entering saveNEWFileName");
-    console.log(editingFile);
-    console.log(newFileName);
-    await firestore.collection("files").doc(editingFile.id).update({
-      fileName: newFileName,
-      uploadedAt: new Date(),
-    });
-    setEditingFile(null);
-    setNewFileName("");
-    fetchFiles();
-    console.log("exiting saveNewFileName");
+    if (editingFile) {
+      const bothNames = editingFile.fileName + "//" + newFileName;
+      await firestore.collection("files").doc(editingFile.id).update({
+        fileName: newFileName,
+        uploadedAt: new Date(),
+      });
+
+      // Add edit action to the activity log
+      addToUserActivityLog("edit", bothNames);
+
+      setEditingFile(null);
+      setNewFileName("");
+      fetchFiles();
+    }
   };
 
   useEffect(() => {
@@ -371,6 +377,41 @@ const Dashboard = () => {
     );
   };
 
+  const addToUserActivityLog = (actionType, fileName) => {
+    let contentValue = "";
+    if (actionType == "edit") {
+      const splitNames = fileName.split("//");
+      contentValue = splitNames[0] + " -> " + splitNames[1];
+    }
+    if (actionType == "delete") {
+      contentValue = fileName;
+    }
+    if (actionType == "upload") {
+      contentValue = fileName;
+    }
+    const newLogEntry = {
+      id: uuidv4(),
+      actionType,
+      fileName,
+      timestamp: new Date().toLocaleString(),
+      contentValue,
+    };
+
+    // Update userData's activityLog
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      activityLog: [...prevUserData.activityLog, newLogEntry],
+    }));
+
+    // Optionally, store the updated user data (including activityLog) back to Firestore
+    firestore
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .update({
+        activityLog: [...userData.activityLog, newLogEntry],
+      });
+  };
+
   return (
     <PageContainer>
       <NavBar />
@@ -433,6 +474,7 @@ const Dashboard = () => {
             userUploads={uploadedFiles.length}
           />
           <ActivityLog activityLog={userData.activityLog} />
+          {/* unsure what prop to apply in an attempt to send actions to my activityLog*/}
         </RightSidebar>
       </Container>
     </PageContainer>

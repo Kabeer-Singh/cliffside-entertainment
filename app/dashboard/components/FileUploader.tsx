@@ -203,7 +203,7 @@ const FileUploader = forwardRef<HTMLDivElement, RightSidebarProps>(
         // Validate the total number of files (acceptedFiles + current uploads)
         if (acceptedFiles.length > maxFiles) {
           setErrorMessage(`You can only upload up to ${maxFiles} files.`);
-          setTimeout(() => setErrorMessage(""), 3000);
+          setTimeout(() => setErrorMessage(""), 1500);
           return;
         }
 
@@ -211,7 +211,7 @@ const FileUploader = forwardRef<HTMLDivElement, RightSidebarProps>(
         if (fileRejections.length > 0) {
           const rejection = fileRejections[0].errors[0];
           setErrorMessage(rejection.message);
-          setTimeout(() => setErrorMessage(""), 3000);
+          setTimeout(() => setErrorMessage(""), 1500);
           return;
         }
 
