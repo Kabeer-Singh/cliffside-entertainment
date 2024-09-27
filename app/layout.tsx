@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description:
       "Cliffside Entertainment is an agency that specializes in fostering collaborations with our artists & industry professionals. Explore the team & in-house tool suite for partners.",
     images: '/linkPreview.png',
+    url: 'https://cliffside.com',
   },
 };
 
