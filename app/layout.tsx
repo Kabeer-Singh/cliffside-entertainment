@@ -8,6 +8,14 @@ export const metadata: Metadata = {
   title: "Cliffside Entertainment",
   description:
     "Cliffside Entertainment is an agency that specializes in fostering collaborations with our artists & industry professionals. Explore the team & in-house tool suite for partners.",
+  openGraph: {
+    type: "website",
+    siteName: 'Cliffside Entertainment',
+    title: "Cliffside Entertainment",
+    description:
+      "Cliffside Entertainment is an agency that specializes in fostering collaborations with our artists & industry professionals. Explore the team & in-house tool suite for partners.",
+    images: '/linkPreview.png',
+  },
 };
 
 export default function RootLayout({
