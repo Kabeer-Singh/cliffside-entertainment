@@ -7,6 +7,7 @@ import { Oswald } from "next/font/google";
 const daFont = Oswald({ subsets: ["latin"], weight: "300" });
 import Image from "next/image";
 import logoImage from "../public/logos/logoNoText.png";
+import Head from "next/head";
 
 // Styled components
 const NavigationContainer = s.div`
@@ -123,7 +124,6 @@ const LoginButton = s.button`
   }
 `;
 
-
 const DrawerToggle = s.div`
   font-size: 50px;
   color: black;
@@ -236,9 +236,19 @@ const NavBar = React.memo(() => {
   if (isMobile) {
     return (
       <>
+        <Head>
+          <meta property="og:site_name" content="Cliffside Entertainment" />
+          <meta property="og:title" content="Cliffside Entertainment" />
+          <meta
+            property="og:description"
+            content="Cliffside Entertainment is an agency that specializes in fostering collaborations with our artists & industry professionals. Explore the team & in-house tool suite for partners."
+          />
+          <meta property="og:image" content="/linkPreview.png" />
+          <link rel="icon" href="./favicon.ico" />
+        </Head>
         <DrawerToggle isOpen={drawerOpen}>
-          <span 
-            style={{ cursor: "pointer", flexBasis: "0", color: '#2B61B1' }}
+          <span
+            style={{ cursor: "pointer", flexBasis: "0", color: "#2B61B1" }}
             onClick={toggleDrawer}
           >
             {threeLines}
@@ -329,33 +339,47 @@ const NavBar = React.memo(() => {
   }
 
   return (
-    <NavigationContainer>
-      <NavBarLeft>
-        <TabHeader onClick={() => handleClick("/")}>HOME</TabHeader>
-        <TabHeader onClick={() => handleClick("about")}>ABOUT</TabHeader>
-        <TabHeader onClick={() => handleClick("contact")}>CONTACT</TabHeader>
-      </NavBarLeft>
+    <>
+      <Head>
+        <meta property="og:site_name" content="Cliffside Entertainment" />
+        <meta property="og:title" content="Cliffside Entertainment" />
+        <meta
+          property="og:description"
+          content="Cliffside Entertainment is an agency that specializes in fostering collaborations with our artists & industry professionals. Explore the team & in-house tool suite for partners."
+        />
+        <meta property="og:image" content="/linkPreview.png" />
+        <link rel="icon" href="./favicon.ico" />
+      </Head>
+      <NavigationContainer>
+        <NavBarLeft>
+          <TabHeader onClick={() => handleClick("/")}>HOME</TabHeader>
+          <TabHeader onClick={() => handleClick("about")}>ABOUT</TabHeader>
+          <TabHeader onClick={() => handleClick("contact")}>CONTACT</TabHeader>
+        </NavBarLeft>
 
-      <NavBarCenter
-        onClick={() => handleClick("/")}
-        style={{ marginRight: "35px" }}
-      >
-        <Logo />
-      </NavBarCenter>
+        <NavBarCenter
+          onClick={() => handleClick("/")}
+          style={{ marginRight: "35px" }}
+        >
+          <Logo />
+        </NavBarCenter>
 
-      <NavBarRight>
-        {user ? (
-          <>
-            <LoginButton onClick={() => handleClick("dashboard")}>
-              dashboard
+        <NavBarRight>
+          {user ? (
+            <>
+              <LoginButton onClick={() => handleClick("dashboard")}>
+                dashboard
+              </LoginButton>
+              <LoginButton onClick={handleLogout}>log out</LoginButton>
+            </>
+          ) : (
+            <LoginButton onClick={() => handleClick("login")}>
+              LOG IN
             </LoginButton>
-            <LoginButton onClick={handleLogout}>log out</LoginButton>
-          </>
-        ) : (
-          <LoginButton onClick={() => handleClick("login")}>LOG IN</LoginButton>
-        )}
-      </NavBarRight>
-    </NavigationContainer>
+          )}
+        </NavBarRight>
+      </NavigationContainer>
+    </>
   );
 });
 

@@ -61,7 +61,7 @@ const LogContainer = styled.div`
   overflow-y: scroll; /* Add scroll when content overflows */
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-flow: column nowrap;
 `;
 
