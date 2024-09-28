@@ -520,7 +520,6 @@ const Dashboard = () => {
             userUploads={uploadedFiles.length}
           />
           <ActivityLog activityLog={userData.activityLog} />
-          {/* unsure what prop to apply in an attempt to send actions to my activityLog*/}
         </RightSidebar>
       </Container>
     </PageContainer>
