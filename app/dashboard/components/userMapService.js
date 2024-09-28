@@ -27,3 +27,5 @@ export const populateUserMap = async () => {
 };
 
 export const getUserMap = () => userMap; // Function to get the current userMap
+
+export default populateUserMap;

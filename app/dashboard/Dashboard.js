@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { auth, firestore } from "../../components/firebase";
+import { auth, firestore, FieldValue } from "../../components/firebase";
 import NavBar from "../../components/navigation";
 import styled, { css } from "styled-components";
 import { v4 as uuidv4 } from "uuid";
@@ -103,6 +103,7 @@ const Dashboard = () => {
   const [sortAttribute, setSortAttribute] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [userMap, setUserMap] = useState(null);
   const [userData, setUserData] = useState({
     profilePicUrl: "",
     email: "",
@@ -236,9 +237,11 @@ const Dashboard = () => {
       .where("userId", "==", user.uid)
       .get();
 
+    const map = await populateUserMap();
+
     const sharedSnapshot = await firestore
       .collection("files")
-      .where("sharedWith", "array-contains", user.email)
+      .where("sharedWith", "array-contains", map[user.uid])
       .get();
 
     setUploadedFiles(
@@ -282,11 +285,12 @@ const Dashboard = () => {
   useEffect(() => {
     // Fetch Files and User Map on component mount
     const fetchFilesAndUserMap = async () => {
-      fetchFiles();
 
       // Populate the userMap if not already populated
-      const userMap = await populateUserMap();
-      console.log("User map inside component:", userMap);
+      const map = await populateUserMap();
+      setUserMap((map));
+
+      fetchFiles();
 
       // Fetch the current user's data
       const fetchUserData = async () => {
@@ -377,18 +381,58 @@ const Dashboard = () => {
     );
   };
 
-  const addToUserActivityLog = (actionType, fileName) => {
+  const addToUserActivityLog = async (
+    actionType,
+    fileName,
+    sharedUserId = null
+  ) => {
     let contentValue = "";
-    if (actionType == "edit") {
+
+    // Handle different action types
+    if (actionType === "edit") {
       const splitNames = fileName.split("//");
-      contentValue = splitNames[0] + " -> " + splitNames[1];
-    }
-    if (actionType == "delete") {
+      contentValue = `${splitNames[0]} -> ${splitNames[1]}`;
+    } else if (["delete", "upload"].includes(actionType)) {
       contentValue = fileName;
     }
-    if (actionType == "upload") {
-      contentValue = fileName;
+
+    // Handle file sharing
+    if (sharedUserId != null) {
+      const map = getUserMap(); // Get userMap with userIds and userNames
+      const sharedUserName = map[sharedUserId]; // Find the recipient's name
+      const senderUserName = map[auth.currentUser.uid]; // Find the sender's name
+      const fileId = fileName.id; // Assuming fileName is also the fileId, adjust as needed
+      const nameOfFile = fileName.fileName;
+
+      // Add shared user to the 'sharedWith' array in the file's entry
+      await firestore
+        .collection("files")
+        .doc(fileId)
+        .update({
+          sharedWith: FieldValue.arrayUnion(sharedUserName),
+        });
+
+      // Add a log entry to the recipient's activity log with the sender's name
+      const recipientLogEntry = {
+        id: uuidv4(),
+        actionType: "shared-with",
+        fileName,
+        timestamp: new Date().toLocaleString(),
+        contentValue: `${nameOfFile} shared by ${senderUserName}`,
+      };
+
+      await firestore
+        .collection("users")
+        .doc(sharedUserId)
+        .update({
+          activityLog: FieldValue.arrayUnion(recipientLogEntry),
+        });
+
+      // Add our own log entry indicating we shared the file with someone else
+      contentValue = `Shared file: ${nameOfFile} with ${sharedUserName}`;
     }
+
+    // Create new log entry for the current user
     const newLogEntry = {
       id: uuidv4(),
       actionType,
@@ -397,18 +441,18 @@ const Dashboard = () => {
       contentValue,
     };
 
-    // Update userData's activityLog
+    // Update local userData state
     setUserData((prevUserData) => ({
       ...prevUserData,
       activityLog: [...prevUserData.activityLog, newLogEntry],
     }));
 
-    // Optionally, store the updated user data (including activityLog) back to Firestore
-    firestore
+    // Update the user's activity log in Firestore
+    await firestore
       .collection("users")
       .doc(auth.currentUser.uid)
       .update({
-        activityLog: [...userData.activityLog, newLogEntry],
+        activityLog: FieldValue.arrayUnion(newLogEntry),
       });
   };
 
@@ -462,6 +506,8 @@ const Dashboard = () => {
                     startEditing={startEditing}
                     saveNewFileName={saveNewFileName}
                     deleteFile={deleteFile}
+                    addToUserActivityLog={addToUserActivityLog}
+                    map={userMap}
                   />
                 ))}
               </div>

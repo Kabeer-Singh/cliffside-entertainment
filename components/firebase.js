@@ -32,6 +32,7 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
+export const FieldValue = firebase.firestore.FieldValue;
 export const auth = getAuth();
 export const firestore = firebase.firestore();
 // export const storage = firebase.storage();

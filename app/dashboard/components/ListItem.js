@@ -11,7 +11,9 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { getUserMap } from "./userMapService";
+import { populateUserMap } from "./userMapService";
+import FileShareDropdown from "./FileShareDropdown"; // Assuming you have this component
+
 
 const ListItemContainer = styled.div`
   // Your styles here
@@ -142,9 +144,11 @@ const ListItem = ({
   startEditing,
   saveNewFileName,
   deleteFile,
+  addToUserActivityLog,
+  map,
 }) => {
   const [newFileName, setNewFileName] = useState(file.fileName);
-  const userMap = getUserMap();
+  const userMap = map;
 
   const handleSave = () => {
     saveNewFileName(newFileName);
@@ -176,43 +180,82 @@ const ListItem = ({
     }
   };
 
+  
 
-  const ToolTip = (props) => (
-    <Popup
-      trigger={
-        <div>
-          <OverflowMenu></OverflowMenu>
-        </div>
-      }
-      position={["left center"]}
-      on="click"
-      closeOnDocumentClick
-      mouseLeaveDelay={300}
-      mouseEnterDelay={0}
-      contentStyle={{ padding: "0px", border: "none" }}
-      arrow={false}
-    >
-      <PopUpCard>
-        <ActionTab onClick={() => {
-          downloadFile(file.fileUrl);
-        }}>Download</ActionTab>
-        <ActionTab
-          onClick={() => {
-            startEditing(props.file);
-          }}
+
+  const ToolTip = (props) => {
+    const [isSharing, setIsSharing] = useState(false);  // State to manage share popup visibility
+    const userMap = props.userMap;
+  
+    // Function to handle file sharing
+    const handleFileShare = async (file) => {
+      setIsSharing(true); // Trigger the share popup
+  
+      // // Populate the user map if it hasn't been done yet
+      // if (Object.keys(userMap).length === 0) {
+      //   const map = await populateUserMap();
+      //   setUserMap(map);
+      // }
+    };
+  
+    // Function to log the activity when file is shared
+    const logFileShareActivity = (file, sharedWith) => {
+      props.addToUserActivityLog('share', props.file, sharedWith)
+    };
+  
+    return (
+      <>
+        <Popup
+          trigger={
+            <div>
+              <OverflowMenu></OverflowMenu>
+            </div>
+          }
+          position={["left center"]}
+          on="click"
+          closeOnDocumentClick
+          mouseLeaveDelay={300}
+          mouseEnterDelay={0}
+          contentStyle={{ padding: "0px", border: "none" }}
+          arrow={false}
         >
-          Edit Name
-        </ActionTab>
-        <ActionTab
-          onClick={() => {
-            deleteFile(file.id);
-          }}
-        >
-          Delete
-        </ActionTab>
-      </PopUpCard>
-    </Popup>
-  );
+          <PopUpCard>
+            <ActionTab onClick={() => downloadFile(props.file.fileUrl)}>
+              Download
+            </ActionTab>
+            <ActionTab onClick={() => startEditing(props.file)}>
+              Edit Name
+            </ActionTab>
+            <ActionTab onClick={() => deleteFile(props.file.id)}>
+              Delete
+            </ActionTab>
+            <ActionTab
+              onClick={() => handleFileShare(props.file)}
+            >
+              Share File
+            </ActionTab>
+          </PopUpCard>
+        </Popup>
+  
+        {isSharing && (
+          <Popup
+            open={isSharing}
+            closeOnDocumentClick
+            onClose={() => setIsSharing(false)}
+          >
+            <FileShareDropdown
+              file={props.file}
+              userMap={userMap}  // Pass the userMap to the dropdown
+              onShare={(sharedWith) => {
+                logFileShareActivity(props.file, sharedWith);  // Log activity
+                setIsSharing(false);  // Close the share popup after sharing
+              }}
+            />
+          </Popup>
+        )}
+      </>
+    );
+  };
 
   return (
     <ListItemContainer key={file.id}>
@@ -242,7 +285,7 @@ const ListItem = ({
       <UploadedBy>
         <UploaderName>{userMap[file.userId]}</UploaderName>
       </UploadedBy>
-      <ToolTip file={file} />
+      <ToolTip file={file} addToUserActivityLog={addToUserActivityLog} userMap={userMap}/>
     </ListItemContainer>
   );
 };

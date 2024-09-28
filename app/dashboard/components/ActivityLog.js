@@ -45,6 +45,10 @@ const ActionType = styled.span`
         return "#ff9800"; // Orange for edit
       case "delete":
         return "#f44336"; // Red for delete
+      case "shared-with":
+        return "#ff4ab1"; //pink for recieved filed
+      case "share":
+        return "#2B61B1"; //blue for file sent off
       default:
         return "#000";
     }
