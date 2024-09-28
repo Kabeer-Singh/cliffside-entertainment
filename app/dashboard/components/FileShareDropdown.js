@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import populateUserMap from "./userMapService";
 import styled from "styled-components";
+import { Orbitron } from "next/font/google";
+const daFont = Orbitron({ subsets: ["latin"], weight: "700" });
+import { auth } from "@/components/firebase";
 
 // Overlay filter to cover the entire page
 const PageFilter = styled.div`
@@ -19,31 +22,32 @@ const PageFilter = styled.div`
 
 // Container for file share options
 const Container = styled.div`
-  background: red;
-  width: 30vw;
-  height: 25vh;
-  padding: 20px;
+  background: linear-gradient(140deg, #e2e2e2, #cdcdcd);
+  width: 20vw;
+  height: 40vh;
+  padding: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
   position: relative;
+  font-family: ${daFont.style.fontFamily};
 `;
 
 // Dropdown styling
 const Dropdown = styled.div`
   position: relative;
-  width: 230px; /* Ensuring a consistent width for dropdown */
-  
+  width: 230px;
+
   .dropdown__face,
   .dropdown__items {
     background-color: #fff;
     padding: 10px 20px;
     border-radius: 25px;
-    width: 100%; /* Maintain consistent width */
-    box-sizing: border-box; /* Prevent overflow */
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .dropdown__face {
@@ -57,22 +61,18 @@ const Dropdown = styled.div`
     position: absolute;
     right: 0;
     top: 100%;
-    width: 100%; /* Ensuring dropdown items have the same width */
+    width: 100%;
     list-style: none;
+    max-height: 20vh;
+    overflow-y: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    background: white;
+    border-radius: 25px;
     visibility: hidden;
-    z-index: -1;
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.93, 0.88, 0.1, 0.8);
-
-    &::before {
-      content: "";
-      background-color: #fff;
-      position: absolute;
-      bottom: 100%;
-      right: 20%;
-      height: 40px;
-      width: 20px;
-    }
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
   }
 
   .dropdown__arrow {
@@ -90,13 +90,12 @@ const Dropdown = styled.div`
     display: none;
 
     &:checked ~ .dropdown__items {
-      top: calc(100% + 25px);
       visibility: visible;
       opacity: 1;
-      z-index: 1;
+      transform: translateY(0); /* Moves the dropdown smoothly into view */
     }
   }
-  
+
   li {
     cursor: pointer;
     padding: 10px 20px;
@@ -110,24 +109,72 @@ const Dropdown = styled.div`
 `;
 
 const StyledLabel = styled.label`
-  color: #2b61b1;
-  font-size: 16px;
+  color: #FCFCFC;
+  font-size: 18px;
   text-transform: uppercase;
+  margin-bottom: 2vh;
 `;
 
-const FileShareDropdown = ({ file, onShare }) => {
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 25vh;
+  font-family: ${daFont.style.fontFamily};
+`;
+
+const ShareButton = styled.button`
+  width: 7vw;
+  height: 5vh;
+  border: none;
+  border-radius: 20px;
+  background: #2b61b1;
+  margin-left: 3vw;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: ${daFont.style.fontFamily};
+  color: white;
+  cursor: pointer;
+  &:disabled {
+    background: #608ed1;
+    cursor: auto;
+  }
+`;
+
+const CancelButton = styled.button`
+  width: 7vw;
+  height: 5vh;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: ${daFont.style.fontFamily};
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background: #918d8d;
+  }
+`;
+
+const FileShareDropdown = ({ file, setIsSharing, onShare }) => {
   const [userMap, setUserMap] = useState({});
   const [selectedUserId, setSelectedUserId] = useState("");
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     const fetchUserMap = async () => {
       const map = await populateUserMap();
-      setUserMap(map);
+      // Filter out the current user's UID from the map
+      const filteredMap = Object.fromEntries(
+        Object.entries(map).filter(([userId]) => userId !== auth.currentUser.uid)
+      );
+      setUserMap(filteredMap);
     };
+    
     fetchUserMap();
   }, []);
-
   const handleShare = () => {
     if (selectedUserId) {
       onShare(selectedUserId);
@@ -136,14 +183,18 @@ const FileShareDropdown = ({ file, onShare }) => {
 
   const handleUserSelect = (userId) => {
     setSelectedUserId(userId);
-    setDropdownOpen(false); // Close the dropdown
+    setDropdownOpen(false); // Close the dropdown when a user is selected
+  };
+
+  const handleCancel = () => {
+    setIsSharing(false);
   };
 
   return (
     <PageFilter>
       <Container>
         <StyledLabel htmlFor="dropdown">
-          Share <span style={{ textDecoration: "underline" }}>{file.fileName}</span> with:
+          Share <span style={{ color: "#2b61b1" }}>{file.fileName}</span> with:
         </StyledLabel>
 
         <Dropdown>
@@ -161,6 +212,7 @@ const FileShareDropdown = ({ file, onShare }) => {
             <div className="dropdown__arrow"></div>
           </label>
 
+          {/* Scrollable dropdown items with animations */}
           <ul className="dropdown__items">
             {Object.keys(userMap).map((userId) => (
               <li key={userId} onClick={() => handleUserSelect(userId)}>
@@ -169,10 +221,12 @@ const FileShareDropdown = ({ file, onShare }) => {
             ))}
           </ul>
         </Dropdown>
-
-        <button onClick={handleShare} disabled={!selectedUserId}>
-          Share
-        </button>
+        <ButtonContainer>
+          <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+          <ShareButton onClick={handleShare} disabled={!selectedUserId}>
+            Share
+          </ShareButton>
+        </ButtonContainer>
       </Container>
     </PageFilter>
   );

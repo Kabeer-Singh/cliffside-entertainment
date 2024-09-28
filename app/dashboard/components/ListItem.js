@@ -230,7 +230,7 @@ const ListItem = ({
         ) : (
           <FileShareDropdown
             file={props.file}
-            isSharing={isSharing}
+            setIsSharing={setIsSharing}
             onShare={(sharedWith) => {
               logFileShareActivity(props.file, sharedWith); // Log the share activity
               setIsSharing(false); // Close the share popup after sharing
