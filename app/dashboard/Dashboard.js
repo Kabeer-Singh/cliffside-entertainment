@@ -112,6 +112,18 @@ const Dashboard = () => {
     activityLog: [],
   });
 
+  const [currentFileId, setCurrentFileId] = useState(null); // Track the currently playing file
+
+  const handlePlayPause = (fileId) => {
+    if (currentFileId === fileId) {
+      // If the file is already playing, toggle pause
+      setCurrentFileId(null);
+    } else {
+      // Set the current playing file
+      setCurrentFileId(fileId);
+    }
+  };
+
   const closeUpload = (file, revisedFile) => {
     setSuccessMessage("File " + file.name + " uploaded successfully!");
 
@@ -508,6 +520,9 @@ const Dashboard = () => {
                     deleteFile={deleteFile}
                     addToUserActivityLog={addToUserActivityLog}
                     map={userMap}
+                    isPlaying={currentFileId === file.id} // Pass whether the file is playing
+                    currentFileId={currentFileId} // Pass the current playing file ID
+                    handlePlayPause={handlePlayPause} // Pass the play/pause handler
                   />
                 ))}
               </div>

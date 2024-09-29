@@ -55,14 +55,13 @@ const SearchBar = styled.input`
 `;
 
 const ListItemContainer = styled.div`
-  // Your styles here
   display: grid;
-  grid-template-columns: 1fr 80px 120px 80px 40px;
+  grid-template-columns: 40px 1fr 80px 120px 80px 40px;
   gap: 60px;
   max-width: 100%;
   align-items: flex-start;
   justify-content: center;
-  padding-left: 30px;
+  padding-left: 40px;
   padding-right: 30px;
   padding-bottom: 15px;
   padding-top: 15px;
@@ -112,6 +111,7 @@ const FileListHeader = ({
       />
     </TabAndSearchContainer>
     <ListItemContainer>
+      <FileDetails>Play</FileDetails>
       <FileDetails>File Name</FileDetails>
       <FileDetails>File Size</FileDetails>
       <FileDetails>Last Uploaded</FileDetails>

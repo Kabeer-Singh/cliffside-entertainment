@@ -1,5 +1,5 @@
 // ListItem.js
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import Popup from "reactjs-popup";
 import { Taviraj } from "next/font/google";
@@ -14,15 +14,15 @@ import {
 import { populateUserMap } from "./userMapService";
 import FileShareDropdown from "./FileShareDropdown"; // Assuming you have this component
 
+// Styled components
 const ListItemContainer = styled.div`
-  // Your styles here
   display: grid;
-  grid-template-columns: 1fr 80px 120px 80px 40px;
+  grid-template-columns: 40px 1fr 80px 120px 80px 40px;
   gap: 60px;
   max-width: 100%;
   align-items: flex-start;
   justify-content: center;
-  padding-left: 30px;
+  padding-left: 45px;
   padding-right: 30px;
   padding-bottom: 15px;
   padding-top: 15px;
@@ -32,6 +32,36 @@ const ListItemContainer = styled.div`
     border-bottom: none;
   }
 `;
+
+const PlayPauseButton = styled.div`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+
+  &.play {
+    border-left: 15px solid #2b61b1;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 0px solid transparent;
+    width: 0;
+    height: 0;
+  }
+
+  &.pause {
+    display: flex;
+    justify-content: space-between;
+    width: 15px;
+    height: 20px;
+  }
+
+  &.pause div {
+    width: 5px;
+    height: 100%;
+    background-color: #2b61b1;
+  }
+`;
+
 const ListItemContent = styled.div`
   display: flex;
   align-items: center;
@@ -58,17 +88,10 @@ const UploadedBy = styled.div`
   display: flex;
   align-items: center;
 `;
-const UploaderPicture = styled.img`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  margin-right: 10px;
-`;
 const UploaderName = styled.span`
   font-size: 14px;
   color: #333;
 `;
-
 const PopUpCard = styled.div`
   background: white;
   color: #999;
@@ -80,7 +103,6 @@ const PopUpCard = styled.div`
   align-items: flex-end;
   justify-content: center;
 `;
-
 const ActionTab = styled.div`
   color: #999;
   font-family: ${daFont.style.fontFamily};
@@ -93,7 +115,6 @@ const ActionTab = styled.div`
     background: #ebedef;
   }
 `;
-
 export const OverflowMenu = () => {
   return (
     <div
@@ -110,7 +131,6 @@ export const OverflowMenu = () => {
     </div>
   );
 };
-
 const dotStyle = {
   display: "block",
   width: "5px",
@@ -122,21 +142,6 @@ const dotStyle = {
   transform: "translateX(-50%)",
 };
 
-const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
-  &-overlay {
-    ...;
-  }
-  // use your custom style for ".popup-content"
-  &-content {
-      all: unset !important;
-  color: #ebedef;
-  font-size: 12px;
-  margin: 6px;
-  border-bottom: 2px solid #ebedef;
-  }
-`;
-
 const ListItem = ({
   file,
   editingFile,
@@ -145,8 +150,13 @@ const ListItem = ({
   deleteFile,
   addToUserActivityLog,
   map,
+  isPlaying,
+  currentFileId,
+  handlePlayPause,
 }) => {
   const [newFileName, setNewFileName] = useState(file.fileName);
+  const [audioUrl, setAudioUrl] = useState(null); // Store the audio URL once retrieved
+  const audioRef = useRef(null); // Reference to the audio element
   const userMap = map;
 
   const handleSave = () => {
@@ -213,16 +223,36 @@ const ListItem = ({
             arrow={false}
           >
             <PopUpCard>
-              <ActionTab onClick={() => { setIsOpen(false); downloadFile(props.file.fileUrl); }}>
+              <ActionTab
+                onClick={() => {
+                  setIsOpen(false);
+                  downloadFile(props.file.fileUrl);
+                }}
+              >
                 Download
               </ActionTab>
-              <ActionTab onClick={() => { setIsOpen(false); startEditing(props.file); }}>
+              <ActionTab
+                onClick={() => {
+                  setIsOpen(false);
+                  startEditing(props.file);
+                }}
+              >
                 Edit Name
               </ActionTab>
-              <ActionTab onClick={() => { setIsOpen(false); deleteFile(props.file.id); }}>
+              <ActionTab
+                onClick={() => {
+                  setIsOpen(false);
+                  deleteFile(props.file.id);
+                }}
+              >
                 Delete
               </ActionTab>
-              <ActionTab onClick={() => { setIsOpen(false); handleFileShare(props.file); }}>
+              <ActionTab
+                onClick={() => {
+                  setIsOpen(false);
+                  handleFileShare(props.file);
+                }}
+              >
                 Share File
               </ActionTab>
             </PopUpCard>
@@ -241,8 +271,58 @@ const ListItem = ({
     );
   };
 
+  // Fetch the download URL and set up the audio element
+  useEffect(() => {
+    const fetchAudioUrl = async () => {
+      try {
+        const storage = getStorage();
+        const fileRef = ref(storage, file.fileUrl);
+        const url = await getDownloadURL(fileRef);
+        setAudioUrl(url); // Set the audio URL once retrieved
+        audioRef.current = new Audio(url); // Initialize the audio object
+      } catch (error) {
+        console.error("Error fetching the audio file:", error);
+      }
+    };
+
+    fetchAudioUrl();
+  }, [file.fileUrl]);
+
+  useEffect(() => {
+    // If the current file is not the playing one, stop the audio
+    if (currentFileId !== file.id && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [currentFileId, file.id]);
+
+  // Handle play/pause toggle
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+
+    handlePlayPause(file.id); // Inform the parent which file is being played
+  };
+
   return (
     <ListItemContainer key={file.id}>
+      {/* Audio play/pause button */}
+      <PlayPauseButton
+        onClick={togglePlayPause}
+        className={isPlaying ? "pause" : "play"}
+      >
+        {isPlaying ? (
+          <>
+            <div></div>
+            <div></div>
+          </>
+        ) : null}
+      </PlayPauseButton>
       <ListItemContent>
         {editingFile?.id === file.id ? (
           <input
