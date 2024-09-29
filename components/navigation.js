@@ -123,7 +123,6 @@ const LoginButton = s.button`
   }
 `;
 
-
 const DrawerToggle = s.div`
   font-size: 50px;
   color: black;
@@ -185,14 +184,34 @@ const Drawer = s.div`
   }
 `;
 
-// Memoized Logo component
 const Logo = React.memo(() => (
   <Image
     alt="logo"
     src={logoImage}
-    width={45}
-    height="auto"
-    style={{ marginRight: "0px", cursor: "pointer" }}
+    width={45} // Assuming this is in pixels
+    height={45} // Set height explicitly for better control
+    style={{
+      position: "absolute",
+      left: "50vw", // Move the center of the logo to the center of the page
+      transform: "translateX(-50%)", // Adjust to perfectly center the logo
+      cursor: "pointer",
+    }}
+  />
+));
+
+
+const LogoDesktop = React.memo(() => (
+  <Image
+    alt="logo"
+    src={logoImage}
+    width={45} // Assuming this is in pixels
+    height={45} // Set height explicitly for better control
+    style={{
+      position: "absolute",
+      left: "50%", // Move the center of the logo to the center of the page
+      transform: "translateX(-50%)", // Adjust to perfectly center the logo
+      cursor: "pointer",
+    }}
   />
 ));
 
@@ -237,21 +256,26 @@ const NavBar = React.memo(() => {
     return (
       <>
         <DrawerToggle isOpen={drawerOpen}>
-          <span 
-            style={{ cursor: "pointer", flexBasis: "0", color: '#2B61B1' }}
+          <span
+            style={{ cursor: "pointer", flexBasis: "0", color: "#2B61B1" }}
             onClick={toggleDrawer}
           >
             {threeLines}
           </span>
           <NavBarCenter onClick={() => handleClick("/")}>
-            <Logo />
+            <Logo style={{top: '55px !important'}}/>
           </NavBarCenter>
-          <LoginButton
-            style={{ flexBasis: "0" }}
-            onClick={() => handleClick("login")}
-          >
-            LOG IN
-          </LoginButton>
+
+          {user ? (
+            <></>
+          ) : (
+            <LoginButton
+              style={{ flexBasis: "0" }}
+              onClick={() => handleClick("login")}
+            >
+              LOG IN
+            </LoginButton>
+          )}
         </DrawerToggle>
         <Drawer isOpen={drawerOpen}>
           <nav>
@@ -340,7 +364,7 @@ const NavBar = React.memo(() => {
         onClick={() => handleClick("/")}
         style={{ marginRight: "35px" }}
       >
-        <Logo />
+        <LogoDesktop style={{top: "1.25vh"}}/>
       </NavBarCenter>
 
       <NavBarRight>
