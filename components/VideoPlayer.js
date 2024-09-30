@@ -7,10 +7,7 @@ const VideoPlayer = ({ src, type, style }) => {
     const video = videoRef.current;
 
     const handleEnded = () => {
-      // When the video ends, seek to the last frame
-      if (video.duration) {
-        video.currentTime = video.duration;
-      }
+      // Optional: You can add custom logic here if needed when the video ends
     };
 
     video.addEventListener('ended', handleEnded);
@@ -26,14 +23,10 @@ const VideoPlayer = ({ src, type, style }) => {
       autoPlay
       muted
       style={style}
-      onEnded={() => {
-        const video = videoRef.current;
-        // Pause at the last frame when the video ends
-        video.currentTime = video.duration;
-        video.pause();
-      }}
+      loop // Add the loop attribute to restart the video automatically
       src={src}
       type={type}
+      playsInline
     >
       <source src={src} type={type} />
       Your browser does not support the video tag.

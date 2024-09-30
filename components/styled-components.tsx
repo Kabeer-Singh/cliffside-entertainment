@@ -1,20 +1,24 @@
-import s from 'styled-components';
-import { Yaldevi, Playfair_Display, Oswald } from 'next/font/google';
-import Link from 'next/link';
-import Image from 'next/image';
+import s from "styled-components";
+import { Yaldevi, Playfair_Display, Oswald } from "next/font/google";
+import Link from "next/link";
+import Image from "next/image";
 
-export const CardFont = Playfair_Display({style: 'italic', weight: '500', subsets: ["latin"]})
-import card from '../public/card.webp';
+export const CardFont = Playfair_Display({
+  style: "italic",
+  weight: "500",
+  subsets: ["latin"],
+});
+import card from "../public/card.webp";
 
-import {css} from 'styled-components'
-const keyframes = require('styled-components').keyframes;
+import { css } from "styled-components";
+const keyframes = require("styled-components").keyframes;
 
-export const Bold = Oswald({ subsets: ["latin"], weight: '700' })
-export const Medium = Oswald({ subsets: ["latin"], weight: "500" })
-export const Regular = Oswald({ subsets: ["latin"], weight: "400" })
-export const Light = Oswald({ subsets: ["latin"], weight: "300" })
-export const TitleFont = Oswald({ subsets: ["latin"], weight: "300" })
-export const ExtraLight = Oswald({ subsets: ["latin"], weight: "200" })
+export const Bold = Oswald({ subsets: ["latin"], weight: "700" });
+export const Medium = Oswald({ subsets: ["latin"], weight: "500" });
+export const Regular = Oswald({ subsets: ["latin"], weight: "400" });
+export const Light = Oswald({ subsets: ["latin"], weight: "300" });
+export const TitleFont = Oswald({ subsets: ["latin"], weight: "300" });
+export const ExtraLight = Oswald({ subsets: ["latin"], weight: "200" });
 
 //home page exports
 export const PageContainer = s.div`
@@ -39,7 +43,6 @@ export const PageContainer = s.div`
 
 `;
 export const InfoContainer = s.div`
-    border-radius: 20px;
     width: 100%;
     height: 93vh;
     margin-top: 2vh;
@@ -54,7 +57,10 @@ export const InfoContainer = s.div`
         display: flex;
         flex-flow: column nowrap;
         justify-content: space-around;
-        overflow: auto;
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+        margin-top: 70px;
     }
 `;
 export const TitleContainer = s.h1`
@@ -71,9 +77,11 @@ export const TitleContainer = s.h1`
 
     @media (max-width: 1000px) {
         font-size: 32px;
+        letter-spacing: 8px;
         margin-right: 0;
+        margin-bottom: 5px;
     }
-`
+`;
 export const Title = s.div`
     display: flex;
     flex-flow: column nowrap;
@@ -85,8 +93,9 @@ export const Title = s.div`
         flex-flow: column nowrap;
         justify-content: center;
         align-items: center;
+        margin-top: 0;
     }
-`
+`;
 export const TitleContainerSecond = s.h1`
     color: #FFF;
     font-family: ${TitleFont.style.fontFamily};
@@ -110,8 +119,8 @@ export const Logo = s(Image)`
     height: 450.5px;
     align-self: center;
     @media (max-width: 1200px) {
-        width: 175px;
-        height: 200px;
+        width: 155px;
+        height: 180px;
         margin-right: 0vw;
     }
 `;
@@ -132,13 +141,14 @@ export const RightColumn = s.div`
     flex-flow: column nowrap;
     @media (max-width: 1000px) {
         margin-top: 0vh;
-
+        width: 100vw;
     }
 `;
 export const Slogan = s.div`
     margin-bottom: 1vh;
     @media (max-width: 1000px) {
-        font-size: 24px;
+        font-size: 21px;
+        letter-spacing: normal;
     }
     color: #FBFFF8;
     text-align: center;
@@ -166,9 +176,12 @@ padding-bottom: 1vh;
 text-align: center!important;
 box-sizing: border-box;
 width: 90%;
+    @media (max-width: 1000px) {
+        margin-top: 0vh;
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
 `;
-
-
 
 //about page exports
 export const InfoContainerAbout = s(InfoContainer)`
@@ -180,7 +193,7 @@ export const InfoContainerAbout = s(InfoContainer)`
     height 100%;
 `;
 const keyframesAnimations = {
-    buildStroke: keyframes`
+  buildStroke: keyframes`
       0% {
         width: 0;
       }
@@ -191,8 +204,8 @@ const keyframesAnimations = {
         width: calc(120% - 1vw);
       }
     `,
-    // Define other keyframes animations as needed
-  };
+  // Define other keyframes animations as needed
+};
 export const Stroke = s.div`
     position: absolute;
     bottom: -20%;
@@ -329,7 +342,7 @@ export const swellAnimation = keyframes`
 
 // Interface for Wave props
 interface WaveProps {
-  type?: 'second';  // Define the type as an optional property that accepts 'second'
+  type?: "second"; // Define the type as an optional property that accepts 'second'
 }
 
 // Styled component for Ocean
@@ -349,13 +362,20 @@ export const Wave = s.div<WaveProps>`
   top: -198px;
   width: 6400px;
   height: 30vh;
-  animation: ${css`${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite`};
+  animation: ${css`
+    ${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite
+  `};
   transform: translate3d(0, 0, 0);
-  opacity: ${props => props.type === 'second' ? 1 : undefined};
-  top: ${props => props.type === 'second' ? '-175px' : '-198px'};
-  animation: ${props => props.type === 'second' 
-    ? css`${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite, ${swellAnimation} 7s ease -1.25s infinite` 
-    : css`${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite`};
+  opacity: ${(props) => (props.type === "second" ? 1 : undefined)};
+  top: ${(props) => (props.type === "second" ? "-175px" : "-198px")};
+  animation: ${(props) =>
+    props.type === "second"
+      ? css`
+          ${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite, ${swellAnimation} 7s ease -1.25s infinite
+        `
+      : css`
+          ${waveAnimation} 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite
+        `};
 `;
 export const ContactUsButton = s(Link)`
     color: #000;
