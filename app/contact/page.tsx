@@ -40,6 +40,7 @@ const InfoContainer = s.div`
   }
     @media (max-width: 768px) {
     margin-top: 70px;
+
     }
 `;
 
@@ -59,7 +60,7 @@ const Column1 = s.div<{ isVisible: boolean }>`
   }
   @media (max-width: 1000px) {
     padding-right: 0;
-    padding-top: 5vh;
+    padding-top: 2vh;
     padding-left: 2vw;
     text-align: left;
   }
@@ -77,7 +78,7 @@ const Column2 = s.div<{ isVisible: boolean }>`
   @media (min-width: 1000px) {
     display: block;
     flex: 1;
-    overflow: auto;
+    overflow: scroll;
   }
     @media (max-width: 1000px) {
     padding-top: 5vh;
@@ -136,8 +137,12 @@ const FormTitle = s.div<FormTitleProps>`
     }
   }
     @media (max-width: 1600px){
-  font-size: 2em;
-}
+      font-size: 2em;
+    }
+  @media (max-width: 672px) {
+      font-size: 1.5em;
+  }
+
 `;
 
 const HiddenTitleContainer = s.div`
@@ -155,6 +160,8 @@ const HiddenTitleContainer = s.div`
     display: none;
   }
   @media (max-width: 600px) {
+    margin-bottom: 18vh;
+    padding-bottom: 0;
     font-size: 32px;
     letter-spacing: 10.36px;
   }

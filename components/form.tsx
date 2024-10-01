@@ -149,6 +149,7 @@ const SubmitButton = s.button`
   }
    @media (max-width: 600px) {
     font-size: 1.25em;
+    margin-bottom: 15vh;
     }
 
 `;
