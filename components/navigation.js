@@ -278,7 +278,7 @@ const NavBar = React.memo(() => {
           )}
         </DrawerToggle>
         <Drawer isOpen={drawerOpen}>
-          <nav>
+          <nav style={{paddingTop: '15px'}}>
             <ul>
               <li>
                 <a
